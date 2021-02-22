@@ -37,15 +37,50 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
-  @Mutation(() => User)
+  @Mutation(() => UserResponse)
   async register(
     @Arg("options") { username, password }: UsernamePasswordInput,
     @Ctx() { em }: MyContext
-  ): Promise<User> {
+  ): Promise<UserResponse> {
+    if (username.length <= 2) {
+      return {
+        errors: [
+          {
+            field: "username",
+            message: "username length must be greater than 2",
+          },
+        ],
+      };
+    }
+    const user = await em.findOne(User, {
+      username,
+    });
+    if (user) {
+      return {
+        errors: [
+          {
+            field: "username",
+            message: "username already exists",
+          },
+        ],
+      };
+    }
+    if (password.length < 6) {
+      return {
+        errors: [
+          {
+            field: "password",
+            message: "password length must be at least 6 characters long",
+          },
+        ],
+      };
+    }
     const hashedPassword = await argon2.hash(password);
-    const user = em.create(User, { username, hashedPassword });
-    await em.persistAndFlush(user);
-    return user;
+    const newUser = em.create(User, { username, hashedPassword });
+    await em.persistAndFlush(newUser);
+    return {
+      user: newUser,
+    };
   }
 
   @Mutation(() => UserResponse)
