@@ -43,7 +43,7 @@ const main = async () => {
         sameSite: "lax",
       },
       saveUninitialized: false,
-      secret: process.env.SECRET_KEY || "",
+      secret: process.env.SECRET_KEY || "default-secret",
       resave: false,
     })
   );
