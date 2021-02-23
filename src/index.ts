@@ -11,14 +11,18 @@ import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { __prod__ } from "./constants";
+import dotenv from "dotenv";
 
 const main = async () => {
+  // Init dotenv
+  dotenv.config();
+
   // Init ORM
   const orm = await MikroORM.init(mikroConfig);
   orm.getMigrator().up();
 
   const app = express();
-  const port = 4000;
+  const port = process.env.PORT || 4000;
   app.listen(port, () => {
     console.log(`Listening on localhost:${port}`);
   });
@@ -39,7 +43,7 @@ const main = async () => {
         sameSite: "lax",
       },
       saveUninitialized: false,
-      secret: "nvndavjdnskajvndakjvndsjkavndsjkalnjkd",
+      secret: process.env.SECRET_KEY || "",
       resave: false,
     })
   );
