@@ -12,6 +12,7 @@ import session from "express-session";
 import connectRedis from "connect-redis";
 import { __prod__ } from "./constants";
 import dotenv from "dotenv";
+import cors from "cors";
 
 const main = async () => {
   // Init dotenv
@@ -26,6 +27,12 @@ const main = async () => {
   app.listen(port, () => {
     console.log(`Listening on localhost:${port}`);
   });
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
 
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
@@ -56,7 +63,10 @@ const main = async () => {
     context: ({ req, res }) => ({ em: orm.em, req, res }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+  });
 };
 
 main().catch((err) => {
