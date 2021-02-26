@@ -3,7 +3,6 @@ import {
   Arg,
   Ctx,
   Field,
-  InputType,
   Mutation,
   ObjectType,
   Query,
@@ -12,14 +11,8 @@ import {
 import argon2 from "argon2";
 import { User } from "../entities/User";
 import { COOKIE_NAME } from "../constants";
-
-@InputType()
-class UsernamePasswordInput {
-  @Field()
-  username: string;
-  @Field()
-  password: string;
-}
+import { UsernamePasswordInput } from "./UsernamePasswordInput";
+import { validateRegister } from "../utils/validateRegister";
 
 @ObjectType()
 class FieldError {
@@ -50,44 +43,20 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") { username, password }: UsernamePasswordInput,
+    @Arg("options") options: UsernamePasswordInput,
     @Ctx() { req, em }: MyContext
   ): Promise<UserResponse> {
-    if (username.length <= 2) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "username length must be greater than 2",
-          },
-        ],
-      };
+    const res = await validateRegister(options, em);
+    if (res.errors.length !== 0) {
+      return res;
     }
-    const user = await em.findOne(User, {
-      username,
+
+    const hashedPassword = await argon2.hash(options.password);
+    const newUser = em.create(User, {
+      username: options.username,
+      hashedPassword,
+      email: options.email,
     });
-    if (user) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "username already exists",
-          },
-        ],
-      };
-    }
-    if (password.length < 6) {
-      return {
-        errors: [
-          {
-            field: "password",
-            message: "password length must be at least 6 characters long",
-          },
-        ],
-      };
-    }
-    const hashedPassword = await argon2.hash(password);
-    const newUser = em.create(User, { username, hashedPassword });
     await em.persistAndFlush(newUser);
 
     req.session.userId = newUser.id;
