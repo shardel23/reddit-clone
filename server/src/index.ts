@@ -13,6 +13,7 @@ import connectRedis from "connect-redis";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import dotenv from "dotenv";
 import cors from "cors";
+import { sendEmail } from "./utils/sendEmail";
 
 const main = async () => {
   // Init dotenv
