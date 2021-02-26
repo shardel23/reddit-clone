@@ -54,15 +54,23 @@ export const validateRegister = async (
       ],
     };
   }
-  if (password.length < 6) {
+  const errors = validatePassword(password);
+  if (errors.length != 0) {
     return {
-      errors: [
-        {
-          field: "password",
-          message: "password length must be at least 6 characters long",
-        },
-      ],
+      errors,
     };
   }
   return { errors: [] };
+};
+
+export const validatePassword = (password: string) => {
+  if (password.length < 6) {
+    return [
+      {
+        field: "password",
+        message: "password length must be at least 6 characters long",
+      },
+    ];
+  }
+  return [];
 };

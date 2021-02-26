@@ -10,9 +10,11 @@ import {
 } from "type-graphql";
 import argon2 from "argon2";
 import { User } from "../entities/User";
-import { COOKIE_NAME } from "../constants";
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 import { UsernamePasswordInput } from "./UsernamePasswordInput";
-import { validateRegister } from "../utils/validateRegister";
+import { validatePassword, validateRegister } from "../utils/validateRegister";
+import { sendEmail } from "../utils/sendEmail";
+import { v4 } from "uuid";
 
 @ObjectType()
 class FieldError {
@@ -114,5 +116,80 @@ export class UserResolver {
         }
       });
     });
+  }
+
+  @Mutation(() => Boolean)
+  async forgotPassword(
+    @Arg("email") email: string,
+    @Ctx() { em, redis }: MyContext
+  ): Promise<Boolean> {
+    const user = await em.findOne(User, { email });
+    if (!user) {
+      return true;
+    }
+
+    const token = v4();
+    await redis.set(
+      FORGET_PASSWORD_PREFIX + token,
+      user.id,
+      "ex",
+      1000 * 60 * 10 // 10 minutes
+    );
+
+    sendEmail({
+      subject: "Reset password",
+      to: email,
+      html: `<a href="http://localhost:3000/change-password/${token}"> reset password </a>`,
+    });
+    return true;
+  }
+
+  @Mutation(() => UserResponse)
+  async changePassword(
+    @Arg("token") token: string,
+    @Arg("newPassword") newPassword: string,
+    @Ctx() { em, redis }: MyContext
+  ): Promise<UserResponse> {
+    const errors = validatePassword(newPassword);
+    if (errors.length !== 0) {
+      return {
+        errors: [
+          {
+            field: "newPassword",
+            message: errors[0].message,
+          },
+        ],
+      };
+    }
+
+    const uid = await redis.get(FORGET_PASSWORD_PREFIX + token);
+    if (!uid) {
+      return {
+        errors: [
+          {
+            field: "token",
+            message: "token expired",
+          },
+        ],
+      };
+    }
+
+    const user = await em.findOne(User, { id: parseInt(uid) });
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "token",
+            message: "user no longer exists",
+          },
+        ],
+      };
+    }
+
+    user.hashedPassword = await argon2.hash(newPassword);
+    await em.persistAndFlush(user);
+
+    await redis.del(FORGET_PASSWORD_PREFIX + token);
+    return { user };
   }
 }

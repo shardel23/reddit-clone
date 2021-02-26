@@ -7,7 +7,7 @@ const MAILTRAP_TEST_PASSWORD = "96cbf527e8f41d";
 interface MailOptions {
   to: string;
   subject: string;
-  text: string;
+  html: string;
 }
 
 export const sendEmail = async (mailOptions: MailOptions) => {
