@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Formik } from "formik";
-import { Button } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
 import { useRegisterMutation } from "../generated/graphql";
@@ -14,13 +14,26 @@ interface registerProps {}
 export const Register: React.FC<registerProps> = ({}) => {
   const [, register] = useRegisterMutation();
   const router = useRouter();
+  const [genericError, setGenericError] = useState("");
 
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ username: "", email: "", password: "" }}
-        onSubmit={async (values, { setErrors }) => {
-          const response = await register(values);
+        initialValues={{
+          username: "",
+          email: "",
+          password: "",
+          retypedPassword: "",
+        }}
+        onSubmit={async (
+          { username, email, password, retypedPassword },
+          { setErrors }
+        ) => {
+          if (password !== retypedPassword) {
+            setGenericError("passwords don't match");
+            return;
+          }
+          const response = await register({ username, email, password });
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
@@ -42,6 +55,13 @@ export const Register: React.FC<registerProps> = ({}) => {
               placeholder="password"
               type="password"
             />
+            <InputField
+              name="retypedPassword"
+              label="Re-type password"
+              placeholder="new password"
+              type="password"
+            />
+            {genericError ? <Box color="red">{genericError}</Box> : null}
             <Button
               type="submit"
               colorScheme="facebook"

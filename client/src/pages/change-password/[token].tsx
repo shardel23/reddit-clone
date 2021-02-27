@@ -13,13 +13,17 @@ import { toErrorMap } from "../../utils/toErrorMap";
 const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
   const [, changePassword] = useChangePasswordMutation();
   const router = useRouter();
-  const [tokenError, setTokenError] = useState("");
+  const [genericError, setGenericError] = useState("");
 
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ newPassword: "" }}
-        onSubmit={async ({ newPassword }, { setErrors }) => {
+        initialValues={{ newPassword: "", retypedPassword: "" }}
+        onSubmit={async ({ newPassword, retypedPassword }, { setErrors }) => {
+          if (newPassword !== retypedPassword) {
+            setGenericError("passwords don't match");
+            return;
+          }
           const response = await changePassword({
             newPassword,
             token,
@@ -27,7 +31,7 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
           if (response.data?.changePassword.errors) {
             const errorMap = toErrorMap(response.data.changePassword.errors);
             if ("token" in errorMap) {
-              setTokenError(errorMap.token);
+              setGenericError(errorMap.token);
             }
             setErrors(errorMap);
           } else {
@@ -43,7 +47,13 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
               placeholder="new password"
               type="password"
             />
-            {tokenError ? <Box color="red">{tokenError}</Box> : null}
+            <InputField
+              name="retypedPassword"
+              label="Re-type password"
+              placeholder="new password"
+              type="password"
+            />
+            {genericError ? <Box color="red">{genericError}</Box> : null}
             <Button
               type="submit"
               colorScheme="facebook"
