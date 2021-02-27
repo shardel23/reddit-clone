@@ -1,8 +1,7 @@
-import { Button } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
-import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { InputField } from "../components/InputField";
 import { Wrapper } from "../components/Wrapper";
 import { useForgotPasswordMutation } from "../generated/graphql";
@@ -12,7 +11,7 @@ interface ForgotPasswordProps {}
 
 export const ForgotPassword: React.FC<ForgotPasswordProps> = ({}) => {
   const [, forgotPassword] = useForgotPasswordMutation();
-  const router = useRouter();
+  const [completed, setCompleted] = useState(false);
 
   return (
     <Wrapper variant="small">
@@ -20,21 +19,28 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({}) => {
         initialValues={{ email: "" }}
         onSubmit={async ({ email }) => {
           await forgotPassword({ email });
-          router.push("/");
+          setCompleted(true);
         }}
       >
-        {({ isSubmitting }) => (
-          <Form>
-            <InputField name="email" label="Email" placeholder="email" />
-            <Button
-              type="submit"
-              colorScheme="facebook"
-              isLoading={isSubmitting}
-            >
-              Submit
-            </Button>
-          </Form>
-        )}
+        {({ isSubmitting }) =>
+          completed ? (
+            <Box>
+              We've sent further instructions to reset your password to the
+              given email address.
+            </Box>
+          ) : (
+            <Form>
+              <InputField name="email" label="Email" placeholder="email" />
+              <Button
+                type="submit"
+                colorScheme="facebook"
+                isLoading={isSubmitting}
+              >
+                Submit
+              </Button>
+            </Form>
+          )
+        }
       </Formik>
     </Wrapper>
   );
