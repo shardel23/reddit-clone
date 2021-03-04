@@ -26,4 +26,7 @@ export class User {
 
   @Property({ type: "text" })
   hashedPassword!: string;
+
+  @Property({ type: "boolean", default: false })
+  isAdmin!: boolean;
 }

@@ -34,6 +34,22 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => [User])
+  async allUsers(@Ctx() { em, req }: MyContext): Promise<User[]> {
+    if (!req.session.userId) {
+      return [];
+    }
+    const user = await em.findOne(User, { id: req.session.userId });
+    if (!user) {
+      return [];
+    }
+    if (!user.isAdmin) {
+      return [];
+    }
+    const users = await em.find(User, {});
+    return users;
+  }
+
   @Query(() => User, { nullable: true })
   async me(@Ctx() { em, req }: MyContext): Promise<User | null> {
     if (!req.session.userId) {
