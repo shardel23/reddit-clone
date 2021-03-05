@@ -3,7 +3,9 @@ SERVER
 
 1) Clone the repo.
 
-2) Run the following commands:
+2) Make sure postgres is installed (create db called lireddit if necessary)
+
+3) Run the following commands:
 npm install
 yarn watch (terminal 1)
 yarn dev (terminal 2)
