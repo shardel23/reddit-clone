@@ -7,6 +7,7 @@ import {
   ObjectType,
   Query,
   Resolver,
+  UseMiddleware,
 } from "type-graphql";
 import argon2 from "argon2";
 import { User } from "../entities/User";
@@ -15,6 +16,7 @@ import { UsernamePasswordInput } from "./UsernamePasswordInput";
 import { validatePassword, validateRegister } from "../utils/validateRegister";
 import { sendEmail } from "../utils/sendEmail";
 import { v4 } from "uuid";
+import { isAuth } from "../middleware/isAuth";
 
 @ObjectType()
 class FieldError {
@@ -35,10 +37,8 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => [User])
+  @UseMiddleware(isAuth)
   async allUsers(@Ctx() { req }: MyContext): Promise<User[]> {
-    if (!req.session.userId) {
-      return [];
-    }
     const user = await User.findOne(req.session.userId);
     if (!user) {
       return [];
@@ -51,10 +51,8 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
+  @UseMiddleware(isAuth)
   async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
-    if (!req.session.userId) {
-      return undefined;
-    }
     return User.findOne(req.session.userId);
   }
 

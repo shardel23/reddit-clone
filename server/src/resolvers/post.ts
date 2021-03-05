@@ -8,8 +8,10 @@ import {
   Mutation,
   Query,
   Resolver,
+  UseMiddleware,
 } from "type-graphql";
 import { MyContext } from "../types";
+import { isAuth } from "../middleware/isAuth";
 
 @InputType()
 export class PostInput {
@@ -32,13 +34,11 @@ export class PostResolver {
   }
 
   @Mutation(() => Post)
+  @UseMiddleware(isAuth)
   createPost(
     @Arg("input") input: PostInput,
     @Ctx() { req }: MyContext
   ): Promise<Post> {
-    if (!req.session.userId) {
-      throw new Error("not authenticated");
-    }
     return Post.create({ ownerId: req.session.userId, ...input }).save();
   }
 
