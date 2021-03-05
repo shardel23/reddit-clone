@@ -5,6 +5,7 @@ import { usePostsQuery } from "../generated/graphql";
 import { Layout } from "../components/Layout";
 import { Link } from "@chakra-ui/react";
 import NextLink from "next/link";
+import { PostCard } from "../components/PostCard";
 
 const Index = () => {
   const [{ data }] = usePostsQuery({
@@ -24,7 +25,9 @@ const Index = () => {
       {!data ? (
         <div> Loading... </div>
       ) : (
-        data.posts.map((post) => <div key={post.id}> {post.title} </div>)
+        data.posts.map((post) => (
+          <PostCard title={post.title} body={post.text} key={post.id} />
+        ))
       )}
     </Layout>
   );
