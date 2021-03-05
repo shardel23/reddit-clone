@@ -51,7 +51,6 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
-  @UseMiddleware(isAuth)
   async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
     return User.findOne(req.session.userId);
   }
