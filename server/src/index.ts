@@ -19,7 +19,8 @@ const main = async () => {
   dotenv.config();
 
   // Init ORM
-  await createConnection(typeormConfig);
+  const conn = await createConnection(typeormConfig);
+  await conn.runMigrations();
 
   const app = express();
   const port = process.env.PORT || 4000;
