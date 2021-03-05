@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Form, Formik } from "formik";
 import { Box, Button } from "@chakra-ui/react";
-import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
 import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
+import { Layout } from "../components/Layout";
 
 interface registerProps {}
 
@@ -17,7 +17,7 @@ export const Register: React.FC<registerProps> = ({}) => {
   const [genericError, setGenericError] = useState("");
 
   return (
-    <Wrapper variant="small">
+    <Layout variant="small">
       <Formik
         initialValues={{
           username: "",
@@ -72,7 +72,7 @@ export const Register: React.FC<registerProps> = ({}) => {
           </Form>
         )}
       </Formik>
-    </Wrapper>
+    </Layout>
   );
 };
 
