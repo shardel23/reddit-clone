@@ -16,7 +16,7 @@ import { UsernamePasswordInput } from "./UsernamePasswordInput";
 import { validatePassword, validateRegister } from "../utils/validateRegister";
 import { sendEmail } from "../utils/sendEmail";
 import { v4 } from "uuid";
-import { isAuth } from "../middleware/isAuth";
+import { isAdminAuth } from "../middleware/isAuth";
 
 @ObjectType()
 class FieldError {
@@ -37,17 +37,9 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => [User])
-  @UseMiddleware(isAuth)
-  async allUsers(@Ctx() { req }: MyContext): Promise<User[]> {
-    const user = await User.findOne(req.session.userId);
-    if (!user) {
-      return [];
-    }
-    if (!user.isAdmin) {
-      return [];
-    }
-    const users = await User.find();
-    return users;
+  @UseMiddleware(isAdminAuth)
+  allUsers(): Promise<User[]> {
+    return User.find();
   }
 
   @Query(() => User, { nullable: true })
@@ -73,7 +65,6 @@ export class UserResolver {
       username: options.username,
       hashedPassword,
       email: options.email,
-      isAdmin: true,
     }).save();
 
     req.session.userId = newUser.id;
