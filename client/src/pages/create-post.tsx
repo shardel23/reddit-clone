@@ -7,15 +7,11 @@ import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useCreatePostMutation, useMeQuery } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
+import { useIsAuth } from "../utils/useIsAuth";
 
 const CreatePost: React.FC<{}> = ({}) => {
+  useIsAuth();
   const router = useRouter();
-  const [{ data, fetching }] = useMeQuery();
-  useEffect(() => {
-    if (!data?.me && !fetching) {
-      router.replace("/login");
-    }
-  }, [fetching, data, router]);
   const [, createPost] = useCreatePostMutation();
 
   return (
