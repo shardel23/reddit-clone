@@ -49,6 +49,7 @@ export type Post = {
   text: Scalars['String'];
   points: Scalars['Float'];
   ownerId: Scalars['Float'];
+  owner: User;
   textSnippet: Scalars['String'];
 };
 
@@ -254,6 +255,10 @@ export type PostsQuery = (
     & { posts: Array<(
       { __typename?: 'Post' }
       & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt'>
+      & { owner: (
+        { __typename?: 'User' }
+        & Pick<User, 'username'>
+      ) }
     )> }
   ) }
 );
@@ -372,6 +377,9 @@ export const PostsDocument = gql`
       textSnippet
       createdAt
       updatedAt
+      owner {
+        username
+      }
     }
   }
 }

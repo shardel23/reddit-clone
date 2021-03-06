@@ -43,6 +43,7 @@ const Index = () => {
               title={post.title}
               body={post.textSnippet}
               createdAt={post.createdAt}
+              owner={post.owner.username}
               key={post.id}
             />
           ))}
