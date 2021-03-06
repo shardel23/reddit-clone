@@ -1,34 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { usePostsQuery } from "../generated/graphql";
 import { Layout } from "../components/Layout";
-import { Link } from "@chakra-ui/react";
+import { Button, Flex, Heading, Link, Stack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { PostCard } from "../components/PostCard";
+import { BUTTON_COLOR_SCHEME } from "../utils/constants";
 
 const Index = () => {
-  const [{ data }] = usePostsQuery({
-    variables: {
-      limit: 10,
-    },
+  const [variables, setVariables] = useState({
+    limit: 10,
+    cursor: null as string | null,
   });
+  const [{ data, fetching }] = usePostsQuery({
+    variables,
+  });
+
+  if (!fetching && !data) {
+    return <div> No posts to show </div>;
+  }
+
   return (
     <Layout>
-      <NextLink href="create-post">
-        <Link> Create new post </Link>
-      </NextLink>
+      <Flex align="center">
+        <Heading>LiReddit</Heading>
+        <NextLink href="create-post">
+          <Link ml="auto"> Create new post </Link>
+        </NextLink>
+      </Flex>
       <br />
-      <br />
-      <h1> Posts: </h1>
-      <br />
-      {!data ? (
+      {!data && fetching ? (
         <div> Loading... </div>
       ) : (
-        data.posts.map((post) => (
-          <PostCard title={post.title} body={post.text} key={post.id} />
-        ))
+        <Stack spacing={6}>
+          {data!.posts.map((post) => (
+            <PostCard
+              title={post.title}
+              body={post.textSnippet}
+              key={post.id}
+            />
+          ))}
+        </Stack>
       )}
+      <br />
+      {data ? (
+        <Flex>
+          <Button
+            colorScheme={BUTTON_COLOR_SCHEME}
+            m="auto"
+            my={8}
+            onClick={() => {
+              setVariables({
+                limit: variables.limit,
+                cursor: data.posts[data.posts.length - 1].createdAt,
+              });
+            }}
+          >
+            Load More
+          </Button>
+        </Flex>
+      ) : null}
     </Layout>
   );
 };

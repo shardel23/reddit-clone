@@ -3,11 +3,13 @@ import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   InputType,
   Int,
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from "type-graphql";
 import { MyContext } from "../types";
@@ -22,8 +24,16 @@ export class PostInput {
   text: string;
 }
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
+  @FieldResolver(() => String)
+  textSnippet(@Root() { text }: Post) {
+    if (text.length <= 50) {
+      return text;
+    }
+    return text.slice(0, 50).concat("...");
+  }
+
   @Query(() => [Post])
   posts(
     @Arg("limit", () => Int) limit: number,
