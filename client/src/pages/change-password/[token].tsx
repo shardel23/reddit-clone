@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { InputField } from "../../components/InputField";
 import { Wrapper } from "../../components/Wrapper";
 import { useChangePasswordMutation } from "../../generated/graphql";
+import { BUTTON_COLOR_SCHEME } from "../../utils/constants";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import { toErrorMap } from "../../utils/toErrorMap";
 
@@ -56,7 +57,7 @@ const ChangePassword: NextPage = () => {
             {genericError ? <Box color="red">{genericError}</Box> : null}
             <Button
               type="submit"
-              colorScheme="facebook"
+              colorScheme={BUTTON_COLOR_SCHEME}
               isLoading={isSubmitting}
             >
               Change

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useForgotPasswordMutation } from "../generated/graphql";
+import { BUTTON_COLOR_SCHEME } from "../utils/constants";
 import { createUrqlClient } from "../utils/createUrqlClient";
 
 interface ForgotPasswordProps {}
@@ -33,7 +34,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({}) => {
               <InputField name="email" label="Email" placeholder="email" />
               <Button
                 type="submit"
-                colorScheme="facebook"
+                colorScheme={BUTTON_COLOR_SCHEME}
                 isLoading={isSubmitting}
               >
                 Submit

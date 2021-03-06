@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
 import { Layout } from "../components/Layout";
+import { BUTTON_COLOR_SCHEME } from "../utils/constants";
 
 interface registerProps {}
 
@@ -64,7 +65,7 @@ export const Register: React.FC<registerProps> = ({}) => {
             {genericError ? <Box color="red">{genericError}</Box> : null}
             <Button
               type="submit"
-              colorScheme="facebook"
+              colorScheme={BUTTON_COLOR_SCHEME}
               isLoading={isSubmitting}
             >
               Register

@@ -6,6 +6,7 @@ import React, { useEffect } from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useCreatePostMutation, useMeQuery } from "../generated/graphql";
+import { BUTTON_COLOR_SCHEME } from "../utils/constants";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { useIsAuth } from "../utils/useIsAuth";
 
@@ -36,7 +37,7 @@ const CreatePost: React.FC<{}> = ({}) => {
             />
             <Button
               type="submit"
-              colorScheme="facebook"
+              colorScheme={BUTTON_COLOR_SCHEME}
               isLoading={isSubmitting}
             >
               Create Post

@@ -9,6 +9,7 @@ import { createUrqlClient } from "../utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { Layout } from "../components/Layout";
+import { BUTTON_COLOR_SCHEME } from "../utils/constants";
 
 export const Login: React.FC<{}> = ({}) => {
   const [, login] = useLoginMutation();
@@ -46,7 +47,7 @@ export const Login: React.FC<{}> = ({}) => {
             />
             <Button
               type="submit"
-              colorScheme="facebook"
+              colorScheme={BUTTON_COLOR_SCHEME}
               isLoading={isSubmitting}
             >
               Login
