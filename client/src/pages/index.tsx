@@ -18,7 +18,11 @@ const Index = () => {
   });
 
   if (!fetching && !data) {
-    return <div> No posts to show </div>;
+    return (
+      <Layout>
+        <div> No posts to show </div>
+      </Layout>
+    );
   }
 
   return (
@@ -34,7 +38,7 @@ const Index = () => {
         <div> Loading... </div>
       ) : (
         <Stack spacing={6}>
-          {data!.posts.map((post) => (
+          {data!.posts.posts.map((post) => (
             <PostCard
               title={post.title}
               body={post.textSnippet}
@@ -45,7 +49,7 @@ const Index = () => {
         </Stack>
       )}
       <br />
-      {data ? (
+      {data && data.posts.hasMore ? (
         <Flex>
           <Button
             colorScheme={BUTTON_COLOR_SCHEME}
@@ -54,7 +58,7 @@ const Index = () => {
             onClick={() => {
               setVariables({
                 limit: variables.limit,
-                cursor: data.posts[data.posts.length - 1].createdAt,
+                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
               });
             }}
           >
