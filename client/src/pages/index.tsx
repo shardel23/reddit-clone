@@ -38,6 +38,7 @@ const Index = () => {
             <PostCard
               title={post.title}
               body={post.textSnippet}
+              createdAt={post.createdAt}
               key={post.id}
             />
           ))}
