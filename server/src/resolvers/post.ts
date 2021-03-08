@@ -16,6 +16,7 @@ import {
 import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
+import { Updoot } from "../entities/Updoot";
 
 @InputType()
 export class PostInput {
@@ -115,5 +116,61 @@ export class PostResolver {
     } catch (e) {
       return false;
     }
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg("postId", () => Int) postId: number,
+    @Arg("value", () => Int) value: number,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    const { userId } = req.session;
+    const isUpvote = value > 0;
+    const pointValue = isUpvote ? 1 : -1;
+    const vote = await Updoot.findOne({ userId, postId });
+    if (vote) {
+      const currentValue = vote.value;
+      if (currentValue === pointValue) {
+        return true;
+      }
+      await getConnection().query(
+        `
+        START TRANSACTION;
+        UPDATE
+          updoot
+        SET
+          value = ${pointValue}
+        WHERE
+          "userId" = ${userId} AND
+          "postId" = ${postId};
+        UPDATE
+          post
+        SET
+          points = points + ${pointValue * 2}
+        WHERE
+          id = ${postId};
+        COMMIT;
+        `
+      );
+      return true;
+    }
+    await getConnection().query(
+      `
+      START TRANSACTION;
+      INSERT INTO updoot
+        ("userId", "postId", value)
+      VALUES
+        (${userId}, ${postId}, ${pointValue});
+      UPDATE
+        post
+      SET
+        points = points + ${pointValue}
+      WHERE
+        id = ${postId};
+      COMMIT;
+      `
+    );
+    return true;
   }
 }

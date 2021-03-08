@@ -40,10 +40,12 @@ const Index = () => {
         <Stack spacing={6}>
           {data!.posts.posts.map((post) => (
             <PostCard
+              postId={post.id}
               title={post.title}
               body={post.textSnippet}
               createdAt={post.createdAt}
               owner={post.owner.username}
+              points={post.points}
               key={post.id}
             />
           ))}

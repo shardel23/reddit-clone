@@ -2,6 +2,7 @@ import { ConnectionOptions } from "typeorm";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import path from "path";
+import { Updoot } from "./entities/Updoot";
 
 export default {
   type: "postgres",
@@ -10,6 +11,6 @@ export default {
   password: "1q2w3e",
   logging: true,
   synchronize: true,
-  entities: [Post, User],
+  entities: [Post, User, Updoot],
   migrations: [path.join(__dirname, "./migrations/*")],
 } as ConnectionOptions;
