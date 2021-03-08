@@ -3,10 +3,12 @@ import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from "type-graphql";
 import argon2 from "argon2";
@@ -34,8 +36,20 @@ class UserResponse {
   user?: User;
 }
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
+  @FieldResolver(() => String)
+  async email(@Root() user: User, @Ctx() { req }: MyContext) {
+    if (req.session.userId === user.id) {
+      return user.email;
+    }
+    const currentUser = await User.findOne(req.session.userId);
+    if (currentUser?.isAdmin) {
+      return user.email;
+    }
+    return "";
+  }
+
   @Query(() => [User])
   @UseMiddleware(isAdminAuth)
   allUsers(): Promise<User[]> {
