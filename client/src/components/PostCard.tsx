@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { useVoteMutation } from "../generated/graphql";
 
 interface PostCardProps {
@@ -20,6 +20,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   points,
 }) => {
   const [, vote] = useVoteMutation();
+  const [currentPoints, setCurrentPoints] = useState(points);
 
   return (
     <Box p={5} shadow="md" borderWidth="1px">
@@ -28,14 +29,17 @@ export const PostCard: React.FC<PostCardProps> = ({
           {title}
         </Heading>
         <Text fontSize="sm" mr="2">
-          {points}
+          {currentPoints}
         </Text>
         <Button
           variant="link"
           color="black"
           fontSize="sm"
           onClick={async () => {
-            await vote({ postId, value: 1 });
+            const res = await vote({ postId, value: 1 });
+            if (res.data?.vote) {
+              setCurrentPoints(res.data.vote);
+            }
           }}
         >
           Up
@@ -45,7 +49,10 @@ export const PostCard: React.FC<PostCardProps> = ({
           color="black"
           fontSize="sm"
           onClick={async () => {
-            await vote({ postId, value: -1 });
+            const res = await vote({ postId, value: -1 });
+            if (res.data?.vote) {
+              setCurrentPoints(res.data.vote);
+            }
           }}
         >
           Down

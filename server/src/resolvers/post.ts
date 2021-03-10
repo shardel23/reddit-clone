@@ -118,13 +118,13 @@ export class PostResolver {
     }
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Int)
   @UseMiddleware(isAuth)
   async vote(
     @Arg("postId", () => Int) postId: number,
     @Arg("value", () => Int) value: number,
     @Ctx() { req }: MyContext
-  ): Promise<boolean> {
+  ): Promise<number> {
     const { userId } = req.session;
     const isUpvote = value > 0;
     const pointValue = isUpvote ? 1 : -1;
@@ -132,7 +132,7 @@ export class PostResolver {
     if (vote) {
       const currentValue = vote.value;
       if (currentValue === pointValue) {
-        return true;
+        return currentValue;
       }
       await getConnection().query(
         `
@@ -153,7 +153,8 @@ export class PostResolver {
         COMMIT;
         `
       );
-      return true;
+      const post = await Post.findOne(postId);
+      return post!.points;
     }
     await getConnection().query(
       `
@@ -171,6 +172,7 @@ export class PostResolver {
       COMMIT;
       `
     );
-    return true;
+    const post = await Post.findOne(postId);
+    return post!.points;
   }
 }

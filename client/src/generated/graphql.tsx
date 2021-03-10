@@ -67,7 +67,7 @@ export type Mutation = {
   createPost: Post;
   updatePost: Post;
   deletePost: Scalars['Boolean'];
-  vote: Scalars['Boolean'];
+  vote: Scalars['Int'];
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
