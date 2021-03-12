@@ -74,6 +74,7 @@ export const createUrqlClient = (ssrExchange) => ({
       keys: {
         PaginatedPosts: () => null,
         User: () => null,
+        PostAndVote: () => null,
       },
       resolvers: {
         Query: {

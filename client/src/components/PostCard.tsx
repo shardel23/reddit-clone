@@ -10,6 +10,7 @@ interface PostCardProps {
   createdAt: string;
   owner: string;
   points: number;
+  vote: number;
 }
 
 export const PostCard: React.FC<PostCardProps> = ({
@@ -19,9 +20,11 @@ export const PostCard: React.FC<PostCardProps> = ({
   createdAt,
   owner,
   points,
+  vote,
 }) => {
-  const [, vote] = useVoteMutation();
+  const [, voteMutation] = useVoteMutation();
   const [currentPoints, setCurrentPoints] = useState(points);
+  const [currentVote, setCurrentVote] = useState(vote);
 
   return (
     <Box p={5} shadow="md" borderWidth="1px">
@@ -33,18 +36,24 @@ export const PostCard: React.FC<PostCardProps> = ({
           {currentPoints}
         </Text>
         <ArrowUpIcon
+          color={currentVote > 0 ? "green.500" : ""}
           onClick={async () => {
-            const res = await vote({ postId, value: 1 });
-            if (res.data?.vote) {
+            const newVote = currentVote > 0 ? 0 : 1;
+            const res = await voteMutation({ postId, value: newVote });
+            if (res.data?.vote !== undefined) {
               setCurrentPoints(res.data.vote);
+              setCurrentVote(newVote);
             }
           }}
         />
         <ArrowDownIcon
+          color={currentVote < 0 ? "red.500" : ""}
           onClick={async () => {
-            const res = await vote({ postId, value: -1 });
-            if (res.data?.vote) {
+            const newVote = currentVote < 0 ? 0 : -1;
+            const res = await voteMutation({ postId, value: newVote });
+            if (res.data?.vote !== undefined) {
               setCurrentPoints(res.data.vote);
+              setCurrentVote(newVote);
             }
           }}
         />

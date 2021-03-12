@@ -22,10 +22,12 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
   return (
     <>
       {!data && fetching ? (
-        <div> Loading... </div>
+        <Center width="100%">
+          <Spinner />
+        </Center>
       ) : (
         <Stack spacing={6}>
-          {data!.posts.posts.map((post) => (
+          {data!.posts.posts.map(({ post, meVote }) => (
             <PostCard
               postId={post.id}
               title={post.title}
@@ -33,6 +35,7 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
               createdAt={post.createdAt}
               owner={post.owner.username}
               points={post.points}
+              vote={meVote}
               key={post.id}
             />
           ))}
@@ -47,7 +50,8 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
                 setVariables({
                   limit: variables.limit,
                   cursor:
-                    data.posts.posts[data.posts.posts.length - 1].createdAt,
+                    data.posts.posts[data.posts.posts.length - 1].post
+                      .createdAt,
                 });
               }
             }}

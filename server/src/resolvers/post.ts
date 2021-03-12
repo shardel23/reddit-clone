@@ -144,8 +144,10 @@ export class PostResolver {
     @Ctx() { req }: MyContext
   ): Promise<number> {
     const { userId } = req.session;
+    const isCancelVote = value === 0;
     const isUpvote = value > 0;
-    const pointValue = isUpvote ? 1 : -1;
+    const isDownvote = !isCancelVote && !isUpvote;
+    const pointValue = isUpvote ? 1 : isDownvote ? -1 : 0;
     const vote = await Updoot.findOne({ userId, postId });
     if (vote) {
       const currentValue = vote.value;
@@ -165,7 +167,13 @@ export class PostResolver {
         UPDATE
           post
         SET
-          points = points + ${pointValue * 2}
+          points = points + ${
+            isCancelVote
+              ? -1 * currentValue
+              : currentValue === 0
+              ? pointValue
+              : pointValue * 2
+          }
         WHERE
           id = ${postId};
         COMMIT;

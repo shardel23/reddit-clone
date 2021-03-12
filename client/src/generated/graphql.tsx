@@ -36,8 +36,14 @@ export type QueryPostArgs = {
 
 export type PaginatedPosts = {
   __typename?: 'PaginatedPosts';
-  posts: Array<Post>;
+  posts: Array<PostAndVote>;
   hasMore: Scalars['Boolean'];
+};
+
+export type PostAndVote = {
+  __typename?: 'PostAndVote';
+  post: Post;
+  meVote: Scalars['Float'];
 };
 
 export type Post = {
@@ -271,11 +277,15 @@ export type PostsQuery = (
     { __typename?: 'PaginatedPosts' }
     & Pick<PaginatedPosts, 'hasMore'>
     & { posts: Array<(
-      { __typename?: 'Post' }
-      & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points'>
-      & { owner: (
-        { __typename?: 'User' }
-        & Pick<User, 'username'>
+      { __typename?: 'PostAndVote' }
+      & Pick<PostAndVote, 'meVote'>
+      & { post: (
+        { __typename?: 'Post' }
+        & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points'>
+        & { owner: (
+          { __typename?: 'User' }
+          & Pick<User, 'username'>
+        ) }
       ) }
     )> }
   ) }
@@ -399,15 +409,18 @@ export const PostsDocument = gql`
   posts(limit: $limit, cursor: $cursor) {
     hasMore
     posts {
-      id
-      title
-      textSnippet
-      createdAt
-      updatedAt
-      points
-      owner {
-        username
+      post {
+        id
+        title
+        textSnippet
+        createdAt
+        updatedAt
+        points
+        owner {
+          username
+        }
       }
+      meVote
     }
   }
 }
