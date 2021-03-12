@@ -1,3 +1,4 @@
+import { ArrowDownIcon, ArrowUpIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useVoteMutation } from "../generated/graphql";
@@ -31,32 +32,22 @@ export const PostCard: React.FC<PostCardProps> = ({
         <Text fontSize="sm" mr="2">
           {currentPoints}
         </Text>
-        <Button
-          variant="link"
-          color="black"
-          fontSize="sm"
+        <ArrowUpIcon
           onClick={async () => {
             const res = await vote({ postId, value: 1 });
             if (res.data?.vote) {
               setCurrentPoints(res.data.vote);
             }
           }}
-        >
-          Up
-        </Button>
-        <Button
-          variant="link"
-          color="black"
-          fontSize="sm"
+        />
+        <ArrowDownIcon
           onClick={async () => {
             const res = await vote({ postId, value: -1 });
             if (res.data?.vote) {
               setCurrentPoints(res.data.vote);
             }
           }}
-        >
-          Down
-        </Button>
+        />
       </Flex>
       <Text fontSize="xs">
         {new Date(parseInt(createdAt)).toLocaleString()}
