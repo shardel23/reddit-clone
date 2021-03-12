@@ -1,8 +1,8 @@
-import { Button, Flex, Stack } from "@chakra-ui/react";
+import { Center, Flex, Stack, Spinner } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { usePostsQuery } from "../generated/graphql";
-import { BUTTON_COLOR_SCHEME } from "../utils/constants";
 import { PostCard } from "./PostCard";
+import VizSensor from "react-visibility-sensor";
 
 interface PostFeedProps {}
 
@@ -41,19 +41,21 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
       <br />
       {data && data.posts.hasMore ? (
         <Flex>
-          <Button
-            colorScheme={BUTTON_COLOR_SCHEME}
-            m="auto"
-            my={8}
-            onClick={() => {
-              setVariables({
-                limit: variables.limit,
-                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
-              });
+          <VizSensor
+            onChange={(isVisible) => {
+              if (isVisible) {
+                setVariables({
+                  limit: variables.limit,
+                  cursor:
+                    data.posts.posts[data.posts.posts.length - 1].createdAt,
+                });
+              }
             }}
           >
-            Load More
-          </Button>
+            <Center width="100%">
+              <Spinner />
+            </Center>
+          </VizSensor>
         </Flex>
       ) : null}
     </>
