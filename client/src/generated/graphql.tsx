@@ -147,6 +147,15 @@ export type UsernamePasswordInput = {
   email?: Maybe<Scalars['String']>;
 };
 
+export type PostSnippetFragment = (
+  { __typename?: 'Post' }
+  & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points'>
+  & { owner: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
+);
+
 export type RegularUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'username'>
@@ -281,16 +290,26 @@ export type PostsQuery = (
       & Pick<PostAndVote, 'meVote'>
       & { post: (
         { __typename?: 'Post' }
-        & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points'>
-        & { owner: (
-          { __typename?: 'User' }
-          & Pick<User, 'username'>
-        ) }
+        & PostSnippetFragment
       ) }
     )> }
   ) }
 );
 
+export const PostSnippetFragmentDoc = gql`
+    fragment PostSnippet on Post {
+  id
+  title
+  textSnippet
+  createdAt
+  updatedAt
+  points
+  owner {
+    id
+    username
+  }
+}
+    `;
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id
@@ -410,21 +429,13 @@ export const PostsDocument = gql`
     hasMore
     posts {
       post {
-        id
-        title
-        textSnippet
-        createdAt
-        updatedAt
-        points
-        owner {
-          username
-        }
+        ...PostSnippet
       }
       meVote
     }
   }
 }
-    `;
+    ${PostSnippetFragmentDoc}`;
 
 export function usePostsQuery(options: Omit<Urql.UseQueryArgs<PostsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<PostsQuery>({ query: PostsDocument, ...options });

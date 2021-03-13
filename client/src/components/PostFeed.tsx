@@ -28,16 +28,7 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
       ) : (
         <Stack spacing={6}>
           {data!.posts.posts.map(({ post, meVote }) => (
-            <PostCard
-              postId={post.id}
-              title={post.title}
-              body={post.textSnippet}
-              createdAt={post.createdAt}
-              owner={post.owner.username}
-              points={post.points}
-              vote={meVote}
-              key={post.id}
-            />
+            <PostCard post={post} vote={meVote} key={post.id} />
           ))}
         </Stack>
       )}

@@ -1,27 +1,15 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useVoteMutation } from "../generated/graphql";
+import { PostSnippetFragment, useVoteMutation } from "../generated/graphql";
 
 interface PostCardProps {
-  postId: number;
-  title: string;
-  body: string;
-  createdAt: string;
-  owner: string;
-  points: number;
   vote: number;
+  post: PostSnippetFragment;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({
-  postId,
-  title,
-  body,
-  createdAt,
-  owner,
-  points,
-  vote,
-}) => {
+export const PostCard: React.FC<PostCardProps> = ({ vote, post }) => {
+  const { id, title, textSnippet, createdAt, owner, points } = post;
   const [, voteMutation] = useVoteMutation();
   const [currentPoints, setCurrentPoints] = useState(points);
   const [currentVote, setCurrentVote] = useState(vote);
@@ -39,7 +27,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           color={currentVote > 0 ? "green.500" : ""}
           onClick={async () => {
             const newVote = currentVote > 0 ? 0 : 1;
-            const res = await voteMutation({ postId, value: newVote });
+            const res = await voteMutation({ postId: id, value: newVote });
             if (res.data?.vote !== undefined) {
               setCurrentPoints(res.data.vote);
               setCurrentVote(newVote);
@@ -50,7 +38,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           color={currentVote < 0 ? "red.500" : ""}
           onClick={async () => {
             const newVote = currentVote < 0 ? 0 : -1;
-            const res = await voteMutation({ postId, value: newVote });
+            const res = await voteMutation({ postId: id, value: newVote });
             if (res.data?.vote !== undefined) {
               setCurrentPoints(res.data.vote);
               setCurrentVote(newVote);
@@ -61,8 +49,8 @@ export const PostCard: React.FC<PostCardProps> = ({
       <Text fontSize="xs">
         {new Date(parseInt(createdAt)).toLocaleString()}
       </Text>
-      <Text fontSize="xx-small"> Posted by {owner}</Text>
-      <Text mt={4}>{body}</Text>
+      <Text fontSize="xx-small"> Posted by {owner.username}</Text>
+      <Text mt={4}>{textSnippet}</Text>
     </Box>
   );
 };

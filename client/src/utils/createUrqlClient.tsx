@@ -20,8 +20,11 @@ import {
   MeDocument,
   LoginMutation,
   RegisterMutation,
+  VoteMutationVariables,
+  VoteMutation,
 } from "../generated/graphql";
 import { betterUpdateQuery } from "./betterUpdateQuery";
+import { gql } from "@urql/core";
 
 const errorExchange: Exchange = ({ forward }) => (ops$) => {
   return pipe(
@@ -104,7 +107,29 @@ export const createUrqlClient = (ssrExchange) => ({
       updates: {
         Mutation: {
           createPost: invalidatePostsCache,
-          vote: invalidatePostsCache,
+          vote: (result, args, cache, _info) => {
+            const { postId } = args as VoteMutationVariables;
+            const data = cache.readFragment(
+              gql`
+                fragment _read on Post {
+                  id
+                  points
+                }
+              `,
+              { id: postId }
+            );
+            if (data) {
+              const newPoints = (result as VoteMutation).vote;
+              cache.writeFragment(
+                gql`
+                  fragment _write on Post {
+                    points
+                  }
+                `,
+                { id: postId, points: newPoints }
+              );
+            }
+          },
           logout: (_result, _args, cache, _info) => {
             betterUpdateQuery<LogoutMutation, MeQuery>(
               cache,
