@@ -1,4 +1,11 @@
-import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
+import {
+  Cache,
+  cacheExchange,
+  Data,
+  ResolveInfo,
+  Resolver,
+  Variables,
+} from "@urql/exchange-graphcache";
 import Router from "next/router";
 import {
   dedupExchange,
@@ -27,6 +34,19 @@ const errorExchange: Exchange = ({ forward }) => (ops$) => {
       }
     })
   );
+};
+
+const invalidatePostsCache = (
+  _result: Data,
+  _args: Variables,
+  cache: Cache,
+  _info: ResolveInfo
+) => {
+  const allFields = cache.inspectFields("Query");
+  const postsQueries = allFields.filter((field) => field.fieldName === "posts");
+  postsQueries.map((postsQuery) => {
+    cache.invalidate("Query", "posts", postsQuery.arguments as Variables);
+  });
 };
 
 export const cursorPagination = (): Resolver => {
@@ -83,6 +103,8 @@ export const createUrqlClient = (ssrExchange) => ({
       },
       updates: {
         Mutation: {
+          createPost: invalidatePostsCache,
+          vote: invalidatePostsCache,
           logout: (_result, _args, cache, _info) => {
             betterUpdateQuery<LogoutMutation, MeQuery>(
               cache,
