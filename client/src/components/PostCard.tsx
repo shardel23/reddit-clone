@@ -1,6 +1,6 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import React from "react";
 import { PostSnippetFragment, useVoteMutation } from "../generated/graphql";
 
 interface PostCardProps {
@@ -10,8 +10,6 @@ interface PostCardProps {
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { id, title, textSnippet, createdAt, owner, points, meVote } = post;
   const [, voteMutation] = useVoteMutation();
-  const [currentPoints, setCurrentPoints] = useState(points);
-  const [currentVote, setCurrentVote] = useState(meVote);
 
   return (
     <Box p={5} shadow="md" borderWidth="1px">
@@ -20,28 +18,20 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
           {title}
         </Heading>
         <Text fontSize="sm" mr="2">
-          {currentPoints}
+          {points}
         </Text>
         <ArrowUpIcon
-          color={currentVote > 0 ? "green.500" : ""}
+          color={meVote > 0 ? "green.500" : ""}
           onClick={async () => {
-            const newVote = currentVote > 0 ? 0 : 1;
-            const res = await voteMutation({ postId: id, value: newVote });
-            if (res.data?.vote !== undefined) {
-              setCurrentPoints(res.data.vote);
-              setCurrentVote(newVote);
-            }
+            const newVote = meVote > 0 ? 0 : 1;
+            await voteMutation({ postId: id, value: newVote });
           }}
         />
         <ArrowDownIcon
-          color={currentVote < 0 ? "red.500" : ""}
+          color={meVote < 0 ? "red.500" : ""}
           onClick={async () => {
-            const newVote = currentVote < 0 ? 0 : -1;
-            const res = await voteMutation({ postId: id, value: newVote });
-            if (res.data?.vote !== undefined) {
-              setCurrentPoints(res.data.vote);
-              setCurrentVote(newVote);
-            }
+            const newVote = meVote < 0 ? 0 : -1;
+            await voteMutation({ postId: id, value: newVote });
           }}
         />
       </Flex>
