@@ -20,4 +20,4 @@ const Index = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: false })(Index);
+export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
