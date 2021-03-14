@@ -9,4 +9,5 @@ fragment PostSnippet on Post {
     id
     username
   }
+  meVote
 }

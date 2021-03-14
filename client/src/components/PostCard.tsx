@@ -4,15 +4,14 @@ import React, { useState } from "react";
 import { PostSnippetFragment, useVoteMutation } from "../generated/graphql";
 
 interface PostCardProps {
-  vote: number;
   post: PostSnippetFragment;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ vote, post }) => {
-  const { id, title, textSnippet, createdAt, owner, points } = post;
+export const PostCard: React.FC<PostCardProps> = ({ post }) => {
+  const { id, title, textSnippet, createdAt, owner, points, meVote } = post;
   const [, voteMutation] = useVoteMutation();
   const [currentPoints, setCurrentPoints] = useState(points);
-  const [currentVote, setCurrentVote] = useState(vote);
+  const [currentVote, setCurrentVote] = useState(meVote);
 
   return (
     <Box p={5} shadow="md" borderWidth="1px">

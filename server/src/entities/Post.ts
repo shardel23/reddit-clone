@@ -49,4 +49,7 @@ export class Post extends BaseEntity {
 
   @OneToMany(() => Updoot, (updoot) => updoot.post)
   updoots: Updoot[];
+
+  @Field()
+  meVote: number;
 }

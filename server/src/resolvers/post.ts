@@ -27,17 +27,9 @@ export class PostInput {
 }
 
 @ObjectType()
-export class PostAndVote {
-  @Field(() => Post)
-  post: Post;
-  @Field()
-  meVote: number;
-}
-
-@ObjectType()
 export class PaginatedPosts {
-  @Field(() => [PostAndVote])
-  posts: PostAndVote[];
+  @Field(() => [Post])
+  posts: Post[];
   @Field()
   hasMore: boolean;
 }
@@ -84,15 +76,15 @@ export class PostResolver {
 
     const { userId } = req.session;
     const postResults = posts.slice(0, realLimit) as Array<Post>;
-    const postsAndVotes = await Promise.all(
+    const postsWithMeVote = await Promise.all(
       postResults.map(async (post) => {
         const vote = await Updoot.findOne({ userId, postId: post.id });
-        return { post: post, meVote: vote?.value ?? 0 };
+        return { ...post, meVote: vote?.value ?? 0 };
       })
     );
 
     return {
-      posts: postsAndVotes,
+      posts: postsWithMeVote as Array<Post>,
       hasMore: posts.length === realLimitPlusOne,
     };
   }

@@ -27,8 +27,8 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
         </Center>
       ) : (
         <Stack spacing={6}>
-          {data!.posts.posts.map(({ post, meVote }) => (
-            <PostCard post={post} vote={meVote} key={post.id} />
+          {data!.posts.posts.map((post) => (
+            <PostCard post={post} key={post.id} />
           ))}
         </Stack>
       )}
@@ -41,8 +41,7 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
                 setVariables({
                   limit: variables.limit,
                   cursor:
-                    data.posts.posts[data.posts.posts.length - 1].post
-                      .createdAt,
+                    data.posts.posts[data.posts.posts.length - 1].createdAt,
                 });
               }
             }}

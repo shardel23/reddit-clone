@@ -108,12 +108,11 @@ export const createUrqlClient = (ssrExchange) => ({
         Mutation: {
           createPost: invalidatePostsCache,
           vote: (result, args, cache, _info) => {
-            const { postId } = args as VoteMutationVariables;
+            const { postId, value } = args as VoteMutationVariables;
             const data = cache.readFragment(
               gql`
                 fragment _read on Post {
                   id
-                  points
                 }
               `,
               { id: postId }
@@ -124,9 +123,10 @@ export const createUrqlClient = (ssrExchange) => ({
                 gql`
                   fragment _write on Post {
                     points
+                    meVote
                   }
                 `,
-                { id: postId, points: newPoints }
+                { id: postId, points: newPoints, meVote: value }
               );
             }
           },

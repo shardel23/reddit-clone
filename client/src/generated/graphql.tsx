@@ -36,14 +36,8 @@ export type QueryPostArgs = {
 
 export type PaginatedPosts = {
   __typename?: 'PaginatedPosts';
-  posts: Array<PostAndVote>;
+  posts: Array<Post>;
   hasMore: Scalars['Boolean'];
-};
-
-export type PostAndVote = {
-  __typename?: 'PostAndVote';
-  post: Post;
-  meVote: Scalars['Float'];
 };
 
 export type Post = {
@@ -56,6 +50,7 @@ export type Post = {
   points: Scalars['Float'];
   ownerId: Scalars['Float'];
   owner: User;
+  meVote: Scalars['Float'];
   textSnippet: Scalars['String'];
 };
 
@@ -149,7 +144,7 @@ export type UsernamePasswordInput = {
 
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points'>
+  & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points' | 'meVote'>
   & { owner: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
@@ -286,12 +281,8 @@ export type PostsQuery = (
     { __typename?: 'PaginatedPosts' }
     & Pick<PaginatedPosts, 'hasMore'>
     & { posts: Array<(
-      { __typename?: 'PostAndVote' }
-      & Pick<PostAndVote, 'meVote'>
-      & { post: (
-        { __typename?: 'Post' }
-        & PostSnippetFragment
-      ) }
+      { __typename?: 'Post' }
+      & PostSnippetFragment
     )> }
   ) }
 );
@@ -308,6 +299,7 @@ export const PostSnippetFragmentDoc = gql`
     id
     username
   }
+  meVote
 }
     `;
 export const RegularUserFragmentDoc = gql`
@@ -428,10 +420,7 @@ export const PostsDocument = gql`
   posts(limit: $limit, cursor: $cursor) {
     hasMore
     posts {
-      post {
-        ...PostSnippet
-      }
-      meVote
+      ...PostSnippet
     }
   }
 }
