@@ -1,5 +1,5 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@chakra-ui/icons";
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, IconButton, Text } from "@chakra-ui/react";
 import React from "react";
 import { PostSnippetFragment, useVoteMutation } from "../generated/graphql";
 
@@ -17,23 +17,29 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <Heading fontSize="xl" mr="2">
           {title}
         </Heading>
-        <Text fontSize="sm" mr="2">
-          {points}
-        </Text>
-        <ArrowUpIcon
-          color={meVote > 0 ? "green.500" : ""}
+        <IconButton
+          icon={<ArrowUpIcon />}
+          colorScheme={meVote > 0 ? "green" : ""}
+          variant="link"
+          aria-label="Upvote"
           onClick={async () => {
             const newVote = meVote > 0 ? 0 : 1;
             await voteMutation({ postId: id, value: newVote });
           }}
         />
-        <ArrowDownIcon
-          color={meVote < 0 ? "red.500" : ""}
+        <IconButton
+          icon={<ArrowDownIcon />}
+          colorScheme={meVote < 0 ? "red" : ""}
+          variant="link"
+          aria-label="Downvote"
           onClick={async () => {
             const newVote = meVote < 0 ? 0 : -1;
             await voteMutation({ postId: id, value: newVote });
           }}
         />
+        <Text fontSize="sm" ml="2">
+          {points}
+        </Text>
       </Flex>
       <Text fontSize="xs">
         {new Date(parseInt(createdAt)).toLocaleString()}
