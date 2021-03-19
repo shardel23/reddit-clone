@@ -15,9 +15,11 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
     <Box p={5} shadow="md" borderWidth="1px">
       <Flex align="center">
         <NextLink href={`/post/${id}`}>
-          <Heading fontSize="xl" mr="2">
-            {title}
-          </Heading>
+          <Link>
+            <Heading fontSize="xl" mr="2">
+              {title}
+            </Heading>
+          </Link>
         </NextLink>
         <PostPoints postId={id} points={points} meVote={meVote} />
       </Flex>
