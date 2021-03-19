@@ -94,27 +94,13 @@ export class PostResolver {
     @Arg("id", () => Int) id: number,
     @Ctx() { req }: MyContext
   ): Promise<Post | undefined> {
-    const res = await getConnection().query(
-      `
-      SELECT
-        p.*,
-        json_build_object(
-          'id', u.id,
-          'username', u.username,
-          'email', u.email
-          ) "owner"
-      FROM post p
-      INNER JOIN public.user u ON u.id = p."ownerId"
-      WHERE p.id = ${id}
-      `
-    );
-    const post = res[0];
+    const post = await Post.findOne(id, { relations: ["owner"] });
     if (!post) {
       return undefined;
     }
     const { userId } = req.session;
     const vote = await Updoot.findOne({ userId, postId: post.id });
-    return { ...post, meVote: vote?.value ?? 0 };
+    return { ...post, meVote: vote?.value ?? 0 } as Post;
   }
 
   @Mutation(() => Post)
