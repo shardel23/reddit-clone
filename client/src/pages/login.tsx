@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Formik } from "formik";
-import { Button, Link } from "@chakra-ui/react";
+import { Button, Link, Heading } from "@chakra-ui/react";
 import { InputField } from "../components/InputField";
 import { useLoginMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
@@ -16,7 +16,7 @@ export const Login: React.FC<{}> = ({}) => {
   const router = useRouter();
 
   return (
-    <Layout variant="small">
+    <Layout variant="small" title="Login">
       <Formik
         initialValues={{ username: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {

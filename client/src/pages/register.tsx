@@ -18,7 +18,7 @@ export const Register: React.FC<registerProps> = ({}) => {
   const [genericError, setGenericError] = useState("");
 
   return (
-    <Layout variant="small">
+    <Layout variant="small" title="Register">
       <Formik
         initialValues={{
           username: "",

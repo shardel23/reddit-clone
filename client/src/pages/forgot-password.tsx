@@ -15,7 +15,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({}) => {
   const [completed, setCompleted] = useState(false);
 
   return (
-    <Layout variant="small">
+    <Layout variant="small" title="Forgot Password">
       <Formik
         initialValues={{ email: "" }}
         onSubmit={async ({ email }) => {

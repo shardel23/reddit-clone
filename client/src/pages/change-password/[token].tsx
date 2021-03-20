@@ -5,7 +5,7 @@ import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { InputField } from "../../components/InputField";
-import { Wrapper } from "../../components/Wrapper";
+import { Layout } from "../../components/Layout";
 import { useChangePasswordMutation } from "../../generated/graphql";
 import { BUTTON_COLOR_SCHEME } from "../../utils/constants";
 import { createUrqlClient } from "../../utils/createUrqlClient";
@@ -17,7 +17,7 @@ const ChangePassword: NextPage = () => {
   const [genericError, setGenericError] = useState("");
 
   return (
-    <Wrapper variant="small">
+    <Layout variant="small" title="Choose New Password">
       <Formik
         initialValues={{ newPassword: "", retypedPassword: "" }}
         onSubmit={async ({ newPassword, retypedPassword }, { setErrors }) => {
@@ -65,7 +65,7 @@ const ChangePassword: NextPage = () => {
           </Form>
         )}
       </Formik>
-    </Wrapper>
+    </Layout>
   );
 };
 
