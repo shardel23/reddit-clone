@@ -27,9 +27,9 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
         </Center>
       ) : (
         <Stack spacing={6}>
-          {data!.posts.posts.map((post) => (
-            <PostCard post={post} key={post.id} />
-          ))}
+          {data!.posts.posts.map((post) =>
+            post ? <PostCard post={post} key={post.id} /> : null
+          )}
         </Stack>
       )}
       <br />
