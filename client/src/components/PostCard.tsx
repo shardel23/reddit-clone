@@ -6,7 +6,7 @@ import {
 } from "../generated/graphql";
 import { PostPoints } from "./PostPoints";
 import NextLink from "next/link";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { MyModal } from "./MyModal";
 
 interface PostCardProps {
@@ -31,10 +31,13 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </Link>
           </NextLink>
           <PostPoints postId={id} points={points} meVote={meVote} />
+          <NextLink href={`/update-post/${id}`}>
+            <IconButton icon={<EditIcon />} aria-label="Edit Post" ml="auto" />
+          </NextLink>
           <IconButton
             icon={<DeleteIcon />}
             aria-label="Delete Post"
-            ml="auto"
+            ml="2"
             onClick={async () => {
               const response = await deletePost({ id });
               if (!response.data?.deletePost) {
