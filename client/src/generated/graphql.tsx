@@ -269,7 +269,7 @@ export type UpdatePostMutation = (
   { __typename?: 'Mutation' }
   & { updatePost?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'text'>
+    & Pick<Post, 'id' | 'title' | 'text' | 'textSnippet'>
   )> }
 );
 
@@ -453,6 +453,7 @@ export const UpdatePostDocument = gql`
     id
     title
     text
+    textSnippet
   }
 }
     `;

@@ -151,21 +151,22 @@ export const createUrqlClient = (ssrExchange, ctx) => {
                 );
               }
             },
-            logout: (_result, _args, cache, _info) => {
+            logout: (result, args, cache, info) => {
+              invalidatePostsCache(result, args, cache, info);
               betterUpdateQuery<LogoutMutation, MeQuery>(
                 cache,
                 { query: MeDocument },
-                _result,
+                result,
                 () => ({
                   me: null,
                 })
               );
             },
-            login: (_result, _args, cache, _info) => {
+            login: (result, _args, cache, _info) => {
               betterUpdateQuery<LoginMutation, MeQuery>(
                 cache,
                 { query: MeDocument },
-                _result,
+                result,
                 (result, query) => {
                   if (result.login.errors) {
                     return query;
