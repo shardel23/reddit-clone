@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   PostSnippetFragment,
   useDeletePostMutation,
+  useMeQuery,
 } from "../generated/graphql";
 import { PostPoints } from "./PostPoints";
 import NextLink from "next/link";
@@ -16,6 +17,7 @@ interface PostCardProps {
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { id, title, textSnippet, createdAt, owner, points, meVote } = post;
   const [, deletePost] = useDeletePostMutation();
+  const [meQuery] = useMeQuery();
 
   const [isShowModal, setShowModal] = useState(false);
 
@@ -31,20 +33,24 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </Link>
           </NextLink>
           <PostPoints postId={id} points={points} meVote={meVote} />
-          <NextLink href={`/update-post/${id}`}>
-            <IconButton icon={<EditIcon />} aria-label="Edit Post" ml="auto" />
-          </NextLink>
-          <IconButton
-            icon={<DeleteIcon />}
-            aria-label="Delete Post"
-            ml="2"
-            onClick={async () => {
-              const response = await deletePost({ id });
-              if (!response.data?.deletePost) {
-                setShowModal(true);
-              }
-            }}
-          />
+          {meQuery.data?.me?.id === owner.id ? (
+            <Box ml="auto">
+              <NextLink href={`/update-post/${id}`}>
+                <IconButton icon={<EditIcon />} aria-label="Edit Post" />
+              </NextLink>
+              <IconButton
+                icon={<DeleteIcon />}
+                aria-label="Delete Post"
+                ml="2"
+                onClick={async () => {
+                  const response = await deletePost({ id });
+                  if (!response.data?.deletePost) {
+                    setShowModal(true);
+                  }
+                }}
+              />
+            </Box>
+          ) : null}
         </Flex>
         <Text fontSize="xs">
           {new Date(parseInt(createdAt)).toLocaleString()}
