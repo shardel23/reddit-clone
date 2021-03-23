@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { InputField } from "../../components/InputField";
 import { Layout } from "../../components/Layout";
-import { useUpdatePostMutation } from "../../generated/graphql";
+import { usePostQuery, useUpdatePostMutation } from "../../generated/graphql";
 import { BUTTON_COLOR_SCHEME } from "../../utils/constants";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 
@@ -14,17 +14,27 @@ const UpdatePost: NextPage = () => {
   const router = useRouter();
   const postId = router.query.id as string;
 
+  if (!postId) {
+    return <div> Could not find post </div>;
+  }
+  const [{ data: postData, fetching }] = usePostQuery({
+    variables: { id: parseInt(postId) },
+  });
+
   const [, updatePost] = useUpdatePostMutation();
 
   return (
     <Layout variant="small" title="Create Post">
       <Formik
-        initialValues={{ title: "", text: "" }}
+        initialValues={{
+          title: postData?.post?.title,
+          text: postData?.post?.text,
+        }}
         onSubmit={async (values) => {
           const { error, data } = await updatePost({
             id: parseInt(postId),
-            title: values.title,
-            text: values.text,
+            title: values.title ?? "",
+            text: values.text ?? "",
           });
           if (!error && data?.updatePost) {
             router.push(`/post/${postId}`);
