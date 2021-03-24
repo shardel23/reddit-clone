@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button, Center, Spinner } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
@@ -23,8 +23,16 @@ const UpdatePost: NextPage = () => {
 
   const [, updatePost] = useUpdatePostMutation();
 
-  return (
-    <Layout variant="small" title="Create Post">
+  let body = <></>;
+
+  if (!postData && fetching) {
+    body = (
+      <Center width="100%">
+        <Spinner />
+      </Center>
+    );
+  } else {
+    body = (
       <Formik
         initialValues={{
           title: postData?.post?.title,
@@ -60,6 +68,12 @@ const UpdatePost: NextPage = () => {
           </Form>
         )}
       </Formik>
+    );
+  }
+
+  return (
+    <Layout variant="small" title="Update Post">
+      {body}
     </Layout>
   );
 };
