@@ -3,9 +3,10 @@ import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React from "react";
+import { EditDeletePostButtons } from "../../components/EditDeletePostButtons";
 import { Layout } from "../../components/Layout";
 import { PostPoints } from "../../components/PostPoints";
-import { usePostQuery } from "../../generated/graphql";
+import { useMeQuery, usePostQuery } from "../../generated/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 
 const Post: NextPage = () => {
@@ -17,6 +18,7 @@ const Post: NextPage = () => {
   const [{ data, fetching }] = usePostQuery({
     variables: { id: parseInt(postId) },
   });
+  const [meQuery] = useMeQuery();
 
   let body = <></>;
   if (fetching) {
@@ -26,18 +28,25 @@ const Post: NextPage = () => {
   } else {
     const { id, title, text, owner, points, meVote, createdAt } = data.post;
     body = (
-      <Box p={10} shadow="md" borderWidth="1px">
-        <Flex align="center">
-          <Heading fontSize="xl" mr="2">
-            {title}
-          </Heading>
-          <PostPoints postId={id} points={points} meVote={meVote} />
-        </Flex>
-        <Text fontSize="small"> Posted by {owner.username}</Text>
-        <Text fontSize="xs">
-          {new Date(parseInt(createdAt)).toLocaleString()}
-        </Text>
-        <Text mt={4}>{text}</Text>
+      <Box>
+        <Box mb={4}>
+          <Flex align="center">
+            <Heading fontSize="xl" mr="2">
+              {title}
+            </Heading>
+            <PostPoints postId={id} points={points} meVote={meVote} />
+          </Flex>
+          <Text fontSize="small"> Posted by {owner.username}</Text>
+          <Text fontSize="xs">
+            {new Date(parseInt(createdAt)).toLocaleString()}
+          </Text>
+          <Text mt={4}>{text}</Text>
+        </Box>
+        {meQuery.data?.me?.id === owner.id ? (
+          <Box ml="auto">
+            <EditDeletePostButtons postId={id} />
+          </Box>
+        ) : null}
       </Box>
     );
   }
