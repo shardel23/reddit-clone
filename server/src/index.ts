@@ -13,6 +13,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { createConnection } from "typeorm";
 import typeormConfig from "./typeorm.config";
+import { createUserLoader } from "./utils/dataloader/createUserLoader";
 
 const main = async () => {
   // Init dotenv
@@ -60,7 +61,12 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ req, res, redis }),
+    context: ({ req, res }) => ({
+      req,
+      res,
+      redis,
+      userLoader: createUserLoader(),
+    }),
   });
 
   apolloServer.applyMiddleware({

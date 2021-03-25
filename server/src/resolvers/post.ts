@@ -17,6 +17,7 @@ import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
 import { Updoot } from "../entities/Updoot";
+import { User } from "../entities/User";
 
 @InputType()
 export class PostInput {
@@ -44,6 +45,14 @@ export class PostResolver {
     return text.slice(0, 50).concat("...");
   }
 
+  @FieldResolver(() => User)
+  owner(
+    @Root() { ownerId }: Post,
+    @Ctx() { userLoader }: MyContext
+  ): Promise<User> {
+    return userLoader.load(ownerId);
+  }
+
   @Query(() => PaginatedPosts)
   async posts(
     @Arg("limit", () => Int) limit: number,
@@ -59,14 +68,8 @@ export class PostResolver {
     const posts = await getConnection().query(
       `
       SELECT
-        p.*,
-        json_build_object(
-          'id', u.id,
-          'username', u.username,
-          'email', u.email
-          ) "owner"
+        p.*
       FROM post p
-      INNER JOIN public.user u ON u.id = p."ownerId"
       ${cursor ? `WHERE p."createdAt" < $2` : ""}
       ORDER BY p."createdAt" DESC
       LIMIT $1
@@ -94,7 +97,7 @@ export class PostResolver {
     @Arg("id", () => Int) id: number,
     @Ctx() { req }: MyContext
   ): Promise<Post | undefined> {
-    const post = await Post.findOne(id, { relations: ["owner"] });
+    const post = await Post.findOne(id);
     if (!post) {
       return undefined;
     }
