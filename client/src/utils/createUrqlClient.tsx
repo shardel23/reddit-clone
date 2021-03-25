@@ -162,7 +162,7 @@ export const createUrqlClient = (ssrExchange, ctx) => {
                 })
               );
             },
-            login: (result, _args, cache, _info) => {
+            login: (result, args, cache, info) => {
               betterUpdateQuery<LoginMutation, MeQuery>(
                 cache,
                 { query: MeDocument },
@@ -176,6 +176,7 @@ export const createUrqlClient = (ssrExchange, ctx) => {
                   };
                 }
               );
+              invalidatePostsCache(result, args, cache, info);
             },
             register: (_result, _args, cache, _info) => {
               betterUpdateQuery<RegisterMutation, MeQuery>(
