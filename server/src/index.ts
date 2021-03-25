@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv-safe/config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
@@ -25,19 +26,19 @@ const main = async () => {
   await conn.runMigrations();
 
   const app = express();
-  const port = process.env.PORT || 4000;
-  app.listen(port, () => {
+  const port = process.env.PORT;
+  app.listen(parseInt(port), () => {
     console.log(`Listening on localhost:${port}`);
   });
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: process.env.CORS_ORIGIN,
       credentials: true,
     })
   );
 
   const RedisStore = connectRedis(session as any);
-  const redis = new Redis();
+  const redis = new Redis(process.env.REDIS_URL);
   app.use(
     session({
       name: COOKIE_NAME,
@@ -52,7 +53,7 @@ const main = async () => {
         sameSite: "lax",
       },
       saveUninitialized: false,
-      secret: process.env.SECRET_KEY || "default-secret",
+      secret: process.env.SESSION_SECRET,
       resave: false,
     })
   );

@@ -3,12 +3,11 @@ import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import path from "path";
 import { Updoot } from "./entities/Updoot";
+import "dotenv-safe/config";
 
 export default {
   type: "postgres",
-  database: "lireddit2",
-  username: "postgres",
-  password: "1q2w3e",
+  url: process.env.DATABASE_URL,
   logging: true,
   synchronize: true,
   entities: [Post, User, Updoot],
