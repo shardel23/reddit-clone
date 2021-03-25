@@ -36,7 +36,7 @@ const main = async () => {
     })
   );
 
-  const RedisStore = connectRedis(session);
+  const RedisStore = connectRedis(session as any);
   const redis = new Redis();
   app.use(
     session({
@@ -44,7 +44,7 @@ const main = async () => {
       store: new RedisStore({
         client: redis,
         disableTouch: true,
-      }),
+      }) as any,
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
         httpOnly: true,
