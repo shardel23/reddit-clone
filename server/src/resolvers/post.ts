@@ -53,11 +53,19 @@ export class PostResolver {
     return userLoader.load(ownerId);
   }
 
+  @FieldResolver(() => Int)
+  meVote(
+    @Root() { id }: Post,
+    @Ctx() { req, voteLoader }: MyContext
+  ): Promise<number> {
+    const { userId } = req.session;
+    return voteLoader.load({ postId: id, userId });
+  }
+
   @Query(() => PaginatedPosts)
   async posts(
     @Arg("limit", () => Int) limit: number,
-    @Arg("cursor", () => String, { nullable: true }) cursor: string,
-    @Ctx() { req }: MyContext
+    @Arg("cursor", () => String, { nullable: true }) cursor: string
   ): Promise<PaginatedPosts> {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
@@ -77,33 +85,17 @@ export class PostResolver {
       queryArgs
     );
 
-    const { userId } = req.session;
     const postResults = posts.slice(0, realLimit) as Array<Post>;
-    const postsWithMeVote = await Promise.all(
-      postResults.map(async (post) => {
-        const vote = await Updoot.findOne({ userId, postId: post.id });
-        return { ...post, meVote: vote?.value ?? 0 };
-      })
-    );
 
     return {
-      posts: postsWithMeVote as Array<Post>,
+      posts: postResults as Array<Post>,
       hasMore: posts.length === realLimitPlusOne,
     };
   }
 
   @Query(() => Post, { nullable: true })
-  async post(
-    @Arg("id", () => Int) id: number,
-    @Ctx() { req }: MyContext
-  ): Promise<Post | undefined> {
-    const post = await Post.findOne(id);
-    if (!post) {
-      return undefined;
-    }
-    const { userId } = req.session;
-    const vote = await Updoot.findOne({ userId, postId: post.id });
-    return { ...post, meVote: vote?.value ?? 0 } as Post;
+  post(@Arg("id", () => Int) id: number): Promise<Post | undefined> {
+    return Post.findOne(id);
   }
 
   @Mutation(() => Post)

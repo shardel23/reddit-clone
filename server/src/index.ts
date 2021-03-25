@@ -14,6 +14,7 @@ import cors from "cors";
 import { createConnection } from "typeorm";
 import typeormConfig from "./typeorm.config";
 import { createUserLoader } from "./utils/dataloader/createUserLoader";
+import { createVoteLoader } from "./utils/dataloader/createVoteLoader";
 
 const main = async () => {
   // Init dotenv
@@ -66,6 +67,7 @@ const main = async () => {
       res,
       redis,
       userLoader: createUserLoader(),
+      voteLoader: createVoteLoader(),
     }),
   });
 
