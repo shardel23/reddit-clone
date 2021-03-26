@@ -30,6 +30,7 @@ const main = async () => {
   app.listen(parseInt(port), () => {
     console.log(`Listening on localhost:${port}`);
   });
+  app.set("proxy", 1);
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN,
@@ -48,7 +49,7 @@ const main = async () => {
       }) as any,
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
-        httpOnly: true,
+        httpOnly: false,
         secure: __prod__,
         sameSite: "lax",
       },
