@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { Updoot } from "./Updoot";
 import { User } from "./User";
+import { Comment } from "./Comment";
 
 @ObjectType()
 @Entity()
@@ -52,4 +53,7 @@ export class Post extends BaseEntity {
 
   @Field()
   meVote: number;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 }
