@@ -100,7 +100,7 @@ export const createUrqlClient = (ssrExchange, ctx) => {
       credentials: "include" as const,
       headers: cookie
         ? {
-            cookie,
+            cookie: cookie,
           }
         : undefined,
     },
