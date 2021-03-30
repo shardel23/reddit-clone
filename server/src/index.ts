@@ -51,7 +51,7 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
         httpOnly: true,
         secure: __prod__,
-        domain: ".shahardotan.com",
+        domain: __prod__ ? ".shahardotan.com" : undefined,
         sameSite: "lax",
       },
       saveUninitialized: false,

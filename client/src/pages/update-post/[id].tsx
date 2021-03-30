@@ -78,4 +78,4 @@ const UpdatePost: NextPage = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(UpdatePost);
+export default withUrqlClient(createUrqlClient, { ssr: false })(UpdatePost);

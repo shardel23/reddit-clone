@@ -54,4 +54,4 @@ const Post: NextPage = () => {
   return <Layout variant="regular">{body}</Layout>;
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Post);
+export default withUrqlClient(createUrqlClient, { ssr: false })(Post);
