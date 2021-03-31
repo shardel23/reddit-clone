@@ -12,12 +12,7 @@ query Post($id: Int!) {
     }
     meVote
     comments {
-      id
-      updatedAt
-      content
-      owner {
-        username
-      }
+      ...Comment
     }
   }
 }

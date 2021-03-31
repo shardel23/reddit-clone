@@ -172,6 +172,15 @@ export type UsernamePasswordInput = {
   email?: Maybe<Scalars['String']>;
 };
 
+export type CommentFragment = (
+  { __typename?: 'Comment' }
+  & Pick<Comment, 'id' | 'updatedAt' | 'content'>
+  & { owner: (
+    { __typename?: 'User' }
+    & Pick<User, 'username'>
+  ) }
+);
+
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
   & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points' | 'meVote'>
@@ -180,11 +189,7 @@ export type PostSnippetFragment = (
     & Pick<User, 'id' | 'username'>
   ), comments: Array<(
     { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'updatedAt' | 'content'>
-    & { owner: (
-      { __typename?: 'User' }
-      & Pick<User, 'username'>
-    ) }
+    & CommentFragment
   )> }
 );
 
@@ -346,11 +351,7 @@ export type PostQuery = (
       & Pick<User, 'id' | 'username'>
     ), comments: Array<(
       { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'updatedAt' | 'content'>
-      & { owner: (
-        { __typename?: 'User' }
-        & Pick<User, 'username'>
-      ) }
+      & CommentFragment
     )> }
   )> }
 );
@@ -373,6 +374,16 @@ export type PostsQuery = (
   ) }
 );
 
+export const CommentFragmentDoc = gql`
+    fragment Comment on Comment {
+  id
+  updatedAt
+  content
+  owner {
+    username
+  }
+}
+    `;
 export const PostSnippetFragmentDoc = gql`
     fragment PostSnippet on Post {
   id
@@ -387,15 +398,10 @@ export const PostSnippetFragmentDoc = gql`
   }
   meVote
   comments {
-    id
-    updatedAt
-    content
-    owner {
-      username
-    }
+    ...Comment
   }
 }
-    `;
+    ${CommentFragmentDoc}`;
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id
@@ -547,16 +553,11 @@ export const PostDocument = gql`
     }
     meVote
     comments {
-      id
-      updatedAt
-      content
-      owner {
-        username
-      }
+      ...Comment
     }
   }
 }
-    `;
+    ${CommentFragmentDoc}`;
 
 export function usePostQuery(options: Omit<Urql.UseQueryArgs<PostQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<PostQuery>({ query: PostDocument, ...options });

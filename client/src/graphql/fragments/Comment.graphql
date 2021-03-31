@@ -1,0 +1,8 @@
+fragment Comment on Comment {
+  id
+  updatedAt
+  content
+  owner {
+    username
+  }
+}

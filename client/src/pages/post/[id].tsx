@@ -8,6 +8,7 @@ import { Layout } from "../../components/Layout";
 import { PostPoints } from "../../components/PostPoints";
 import { useMeQuery, usePostQuery } from "../../generated/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
+import { CommentSection } from "../../components/CommentSection";
 
 const Post: NextPage = () => {
   const router = useRouter();
@@ -56,26 +57,7 @@ const Post: NextPage = () => {
             <EditDeletePostButtons postId={id} />
           </Box>
         ) : null}
-        {comments.length > 0 ? (
-          <Box mt={4}>
-            <Heading fontSize="l">Comments:</Heading>
-            {comments.map((comment) => (
-              <Box key={comment.id} mt={4}>
-                <Flex align="center">
-                  <Heading fontSize="sm" mr={4}>
-                    {comment.owner.username}
-                  </Heading>
-                  <Text fontSize="xs">
-                    {new Date(parseInt(comment.updatedAt)).toLocaleString()}
-                  </Text>
-                </Flex>
-                <Flex>
-                  <Text>{comment.content}</Text>
-                </Flex>
-              </Box>
-            ))}
-          </Box>
-        ) : null}
+        {comments.length > 0 ? <CommentSection comments={comments} /> : null}
       </Box>
     );
   }

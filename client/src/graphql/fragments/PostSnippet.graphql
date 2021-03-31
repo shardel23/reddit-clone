@@ -11,11 +11,6 @@ fragment PostSnippet on Post {
   }
   meVote
   comments {
-    id
-    updatedAt
-    content
-    owner {
-      username
-    }
+    ...Comment
   }
 }
