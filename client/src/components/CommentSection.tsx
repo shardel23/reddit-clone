@@ -10,7 +10,9 @@ interface CommentSectionProps {
 export const CommentSection: React.FC<CommentSectionProps> = ({ comments }) => {
   return (
     <Box mt={4}>
-      <Heading fontSize="l">Comments:</Heading>
+      <Heading fontSize="l" mt={4}>
+        Comments:
+      </Heading>
       <Stack spacing={4}>
         {comments.map((comment) => (
           <Comment comment={comment} key={comment.id} />

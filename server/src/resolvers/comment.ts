@@ -21,10 +21,10 @@ export class CommentResolver {
   @UseMiddleware(isAuth)
   createComment(
     @Arg("postId", () => Int) postId: number,
-    @Arg("userId", () => Int) userId: number,
     @Arg("content", () => String) content: string,
-    @Ctx() {}: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<Comment> {
+    const { userId } = req.session;
     return Comment.create({ postId, ownerId: userId, content }).save();
   }
 

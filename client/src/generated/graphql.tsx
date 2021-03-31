@@ -147,7 +147,6 @@ export type MutationChangePasswordArgs = {
 
 export type MutationCreateCommentArgs = {
   content: Scalars['String'];
-  userId: Scalars['Int'];
   postId: Scalars['Int'];
 };
 
@@ -220,6 +219,20 @@ export type ChangePasswordMutation = (
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'message'>
     )>> }
+  ) }
+);
+
+export type CreateCommentMutationVariables = Exact<{
+  postId: Scalars['Int'];
+  content: Scalars['String'];
+}>;
+
+
+export type CreateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { createComment: (
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id'>
   ) }
 );
 
@@ -441,6 +454,17 @@ export const ChangePasswordDocument = gql`
 
 export function useChangePasswordMutation() {
   return Urql.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument);
+};
+export const CreateCommentDocument = gql`
+    mutation CreateComment($postId: Int!, $content: String!) {
+  createComment(postId: $postId, content: $content) {
+    id
+  }
+}
+    `;
+
+export function useCreateCommentMutation() {
+  return Urql.useMutation<CreateCommentMutation, CreateCommentMutationVariables>(CreateCommentDocument);
 };
 export const CreatePostDocument = gql`
     mutation CreatePost($input: PostInput!) {

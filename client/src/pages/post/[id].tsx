@@ -9,6 +9,7 @@ import { PostPoints } from "../../components/PostPoints";
 import { useMeQuery, usePostQuery } from "../../generated/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import { CommentSection } from "../../components/CommentSection";
+import { NewCommentSection } from "../../components/NewCommentSection";
 
 const Post: NextPage = () => {
   const router = useRouter();
@@ -57,6 +58,7 @@ const Post: NextPage = () => {
             <EditDeletePostButtons postId={id} />
           </Box>
         ) : null}
+        <NewCommentSection postId={parseInt(postId)} />
         {comments.length > 0 ? <CommentSection comments={comments} /> : null}
       </Box>
     );
