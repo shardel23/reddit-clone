@@ -24,6 +24,8 @@ import {
   VoteMutation,
   DeletePostMutationVariables,
   DeletePostMutation,
+  DeleteCommentMutation,
+  DeleteCommentMutationVariables,
 } from "../generated/graphql";
 import { betterUpdateQuery } from "./betterUpdateQuery";
 import { gql } from "@urql/core";
@@ -119,6 +121,14 @@ export const createUrqlClient = (ssrExchange, ctx) => {
         },
         updates: {
           Mutation: {
+            deleteComment: (result, args, cache, _info) => {
+              if ((result as DeleteCommentMutation).deleteComment) {
+                cache.invalidate({
+                  __typename: "Comment",
+                  id: (args as DeleteCommentMutationVariables).id,
+                });
+              }
+            },
             deletePost: (result, args, cache, _info) => {
               if ((result as DeletePostMutation).deletePost) {
                 cache.invalidate({

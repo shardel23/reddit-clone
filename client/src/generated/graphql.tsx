@@ -97,6 +97,7 @@ export type Mutation = {
   forgotPassword: Scalars['Boolean'];
   changePassword: UserResponse;
   createComment: Comment;
+  deleteComment: Scalars['Boolean'];
 };
 
 
@@ -150,6 +151,12 @@ export type MutationCreateCommentArgs = {
   postId: Scalars['Int'];
 };
 
+
+export type MutationDeleteCommentArgs = {
+  postId: Scalars['Int'];
+  id: Scalars['Int'];
+};
+
 export type PostInput = {
   title: Scalars['String'];
   text: Scalars['String'];
@@ -175,10 +182,10 @@ export type UsernamePasswordInput = {
 
 export type CommentFragment = (
   { __typename?: 'Comment' }
-  & Pick<Comment, 'id' | 'updatedAt' | 'content'>
+  & Pick<Comment, 'id' | 'updatedAt' | 'content' | 'postId'>
   & { owner: (
     { __typename?: 'User' }
-    & Pick<User, 'username'>
+    & Pick<User, 'id' | 'username'>
   ) }
 );
 
@@ -227,6 +234,17 @@ export type CreatePostMutation = (
     { __typename?: 'Post' }
     & Pick<Post, 'id' | 'ownerId' | 'createdAt' | 'updatedAt' | 'title' | 'text' | 'points'>
   ) }
+);
+
+export type DeleteCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+  postId: Scalars['Int'];
+}>;
+
+
+export type DeleteCommentMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteComment'>
 );
 
 export type DeletePostMutationVariables = Exact<{
@@ -378,8 +396,10 @@ export const CommentFragmentDoc = gql`
   updatedAt
   content
   owner {
+    id
     username
   }
+  postId
 }
     `;
 export const PostSnippetFragmentDoc = gql`
@@ -438,6 +458,15 @@ export const CreatePostDocument = gql`
 
 export function useCreatePostMutation() {
   return Urql.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument);
+};
+export const DeleteCommentDocument = gql`
+    mutation DeleteComment($id: Int!, $postId: Int!) {
+  deleteComment(id: $id, postId: $postId)
+}
+    `;
+
+export function useDeleteCommentMutation() {
+  return Urql.useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DeleteCommentDocument);
 };
 export const DeletePostDocument = gql`
     mutation DeletePost($id: Int!) {

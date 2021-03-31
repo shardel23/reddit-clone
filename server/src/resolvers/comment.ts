@@ -52,4 +52,23 @@ export class CommentResolver {
   ): Promise<Comment | undefined> {
     return Comment.findOne({ id, postId, ownerId: userId });
   }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async deleteComment(
+    @Arg("id", () => Int) id: number,
+    @Arg("postId", () => Int) postId: number,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    try {
+      const res = await Comment.delete({
+        id,
+        postId,
+        ownerId: parseInt(req.session.userId),
+      });
+      return res.affected === 1 ? true : false;
+    } catch (e) {
+      return false;
+    }
+  }
 }

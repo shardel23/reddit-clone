@@ -3,6 +3,8 @@ fragment Comment on Comment {
   updatedAt
   content
   owner {
+    id
     username
   }
+  postId
 }
