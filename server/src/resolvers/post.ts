@@ -18,6 +18,7 @@ import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
 import { Updoot } from "../entities/Updoot";
 import { User } from "../entities/User";
+import { Comment } from "../entities/Comment";
 
 @InputType()
 export class PostInput {
@@ -50,6 +51,7 @@ export class PostResolver {
     @Root() { ownerId }: Post,
     @Ctx() { userLoader }: MyContext
   ): Promise<User> {
+    console.log("PostOwner");
     return userLoader.load(ownerId);
   }
 
@@ -210,5 +212,10 @@ export class PostResolver {
     );
     const post = await Post.findOne(postId);
     return post!.points;
+  }
+
+  @FieldResolver(() => [Comment])
+  comments(@Root() { id }: Post): Promise<Comment[]> {
+    return Comment.find({ where: { postId: id } });
   }
 }

@@ -6,6 +6,7 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import { CommentResolver } from "./resolvers/comment";
 import Redis from "ioredis";
 import session from "express-session";
 import connectRedis from "connect-redis";
@@ -16,6 +17,7 @@ import { createConnection } from "typeorm";
 import typeormConfig from "./typeorm.config";
 import { createUserLoader } from "./utils/dataloader/createUserLoader";
 import { createVoteLoader } from "./utils/dataloader/createVoteLoader";
+import { createPostLoader } from "./utils/dataloader/createPostLoader";
 
 const main = async () => {
   // Init dotenv
@@ -62,7 +64,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, PostResolver, UserResolver],
+      resolvers: [HelloResolver, PostResolver, UserResolver, CommentResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({
@@ -71,6 +73,7 @@ const main = async () => {
       redis,
       userLoader: createUserLoader(),
       voteLoader: createVoteLoader(),
+      postLoader: createPostLoader(),
     }),
   });
 
