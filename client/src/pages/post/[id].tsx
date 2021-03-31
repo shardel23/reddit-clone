@@ -26,7 +26,16 @@ const Post: NextPage = () => {
   } else if (!data?.post) {
     body = <div>Error</div>;
   } else {
-    const { id, title, text, owner, points, meVote, createdAt } = data.post;
+    const {
+      id,
+      title,
+      text,
+      owner,
+      points,
+      meVote,
+      createdAt,
+      comments,
+    } = data.post;
     body = (
       <Box>
         <Box mb={4}>
@@ -45,6 +54,26 @@ const Post: NextPage = () => {
         {meQuery.data?.me?.id === owner.id ? (
           <Box ml="auto">
             <EditDeletePostButtons postId={id} />
+          </Box>
+        ) : null}
+        {comments.length > 0 ? (
+          <Box mt={4}>
+            <Heading fontSize="l">Comments:</Heading>
+            {comments.map((comment) => (
+              <Box key={comment.id} mt={4}>
+                <Flex align="center">
+                  <Heading fontSize="sm" mr={4}>
+                    {comment.owner.username}
+                  </Heading>
+                  <Text fontSize="xs">
+                    {new Date(parseInt(comment.updatedAt)).toLocaleString()}
+                  </Text>
+                </Flex>
+                <Flex>
+                  <Text>{comment.content}</Text>
+                </Flex>
+              </Box>
+            ))}
           </Box>
         ) : null}
       </Box>

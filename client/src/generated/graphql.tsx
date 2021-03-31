@@ -344,7 +344,14 @@ export type PostQuery = (
     & { owner: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
-    ) }
+    ), comments: Array<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'updatedAt' | 'content'>
+      & { owner: (
+        { __typename?: 'User' }
+        & Pick<User, 'username'>
+      ) }
+    )> }
   )> }
 );
 
@@ -539,6 +546,14 @@ export const PostDocument = gql`
       username
     }
     meVote
+    comments {
+      id
+      updatedAt
+      content
+      owner {
+        username
+      }
+    }
   }
 }
     `;
