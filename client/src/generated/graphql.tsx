@@ -21,6 +21,7 @@ export type Query = {
   post?: Maybe<Post>;
   allUsers: Array<User>;
   me?: Maybe<User>;
+  getComment?: Maybe<Comment>;
 };
 
 
@@ -31,6 +32,13 @@ export type QueryPostsArgs = {
 
 
 export type QueryPostArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryGetCommentArgs = {
+  userId: Scalars['Int'];
+  postId: Scalars['Int'];
   id: Scalars['Int'];
 };
 
@@ -52,6 +60,7 @@ export type Post = {
   owner: User;
   meVote: Scalars['Float'];
   textSnippet: Scalars['String'];
+  comments: Array<Comment>;
 };
 
 export type User = {
@@ -61,6 +70,18 @@ export type User = {
   updatedAt: Scalars['String'];
   email: Scalars['String'];
   username: Scalars['String'];
+};
+
+export type Comment = {
+  __typename?: 'Comment';
+  id: Scalars['Float'];
+  ownerId: Scalars['Float'];
+  owner: User;
+  postId: Scalars['Float'];
+  post: Post;
+  content: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type Mutation = {
@@ -74,6 +95,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   forgotPassword: Scalars['Boolean'];
   changePassword: UserResponse;
+  createComment: Comment;
 };
 
 
@@ -120,6 +142,13 @@ export type MutationChangePasswordArgs = {
   token: Scalars['String'];
 };
 
+
+export type MutationCreateCommentArgs = {
+  content: Scalars['String'];
+  userId: Scalars['Int'];
+  postId: Scalars['Int'];
+};
+
 export type PostInput = {
   title: Scalars['String'];
   text: Scalars['String'];
@@ -149,7 +178,14 @@ export type PostSnippetFragment = (
   & { owner: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
-  ) }
+  ), comments: Array<(
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'updatedAt' | 'content'>
+    & { owner: (
+      { __typename?: 'User' }
+      & Pick<User, 'username'>
+    ) }
+  )> }
 );
 
 export type RegularUserFragment = (
@@ -343,6 +379,14 @@ export const PostSnippetFragmentDoc = gql`
     username
   }
   meVote
+  comments {
+    id
+    updatedAt
+    content
+    owner {
+      username
+    }
+  }
 }
     `;
 export const RegularUserFragmentDoc = gql`

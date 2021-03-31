@@ -10,4 +10,12 @@ fragment PostSnippet on Post {
     username
   }
   meVote
+  comments {
+    id
+    updatedAt
+    content
+    owner {
+      username
+    }
+  }
 }

@@ -10,7 +10,16 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const { id, title, textSnippet, createdAt, owner, points, meVote } = post;
+  const {
+    id,
+    title,
+    textSnippet,
+    createdAt,
+    owner,
+    points,
+    meVote,
+    comments,
+  } = post;
   const [meQuery] = useMeQuery();
 
   return (
@@ -36,6 +45,15 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </Text>
         <Text fontSize="xx-small"> Posted by {owner.username}</Text>
         <Text mt={4}>{textSnippet}</Text>
+        {comments.length > 0 ? (
+          <NextLink href={`/post/${id}`}>
+            <Link>
+              <Text fontSize="xs" mt={3}>
+                {comments.length} comments
+              </Text>
+            </Link>
+          </NextLink>
+        ) : undefined}
       </Box>
     </>
   );
