@@ -61,6 +61,7 @@ export type Post = {
   meVote: Scalars['Float'];
   textSnippet: Scalars['String'];
   comments: Array<Comment>;
+  commentsCount: Scalars['Int'];
 };
 
 export type User = {
@@ -183,14 +184,11 @@ export type CommentFragment = (
 
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points' | 'meVote'>
+  & Pick<Post, 'id' | 'title' | 'textSnippet' | 'createdAt' | 'updatedAt' | 'points' | 'meVote' | 'commentsCount'>
   & { owner: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
-  ), comments: Array<(
-    { __typename?: 'Comment' }
-    & CommentFragment
-  )> }
+  ) }
 );
 
 export type RegularUserFragment = (
@@ -397,11 +395,9 @@ export const PostSnippetFragmentDoc = gql`
     username
   }
   meVote
-  comments {
-    ...Comment
-  }
+  commentsCount
 }
-    ${CommentFragmentDoc}`;
+    `;
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id

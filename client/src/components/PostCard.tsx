@@ -18,7 +18,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
     owner,
     points,
     meVote,
-    comments,
+    commentsCount,
   } = post;
   const [meQuery] = useMeQuery();
 
@@ -45,11 +45,11 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </Text>
         <Text fontSize="xx-small"> Posted by {owner.username}</Text>
         <Text mt={4}>{textSnippet}</Text>
-        {comments.length > 0 ? (
+        {commentsCount > 0 ? (
           <NextLink href={`/post/${id}`}>
             <Link>
               <Text fontSize="xs" mt={3}>
-                {comments.length} comments
+                {commentsCount} comments
               </Text>
             </Link>
           </NextLink>

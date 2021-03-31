@@ -218,4 +218,12 @@ export class PostResolver {
   comments(@Root() { id }: Post): Promise<Comment[]> {
     return Comment.find({ where: { postId: id } });
   }
+
+  @FieldResolver(() => Int)
+  async commentsCount(@Root() { id }: Post): Promise<number> {
+    const [, commentsCount] = await Comment.findAndCount({
+      where: { postId: id },
+    });
+    return commentsCount;
+  }
 }

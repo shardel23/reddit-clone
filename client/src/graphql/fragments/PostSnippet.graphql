@@ -10,7 +10,5 @@ fragment PostSnippet on Post {
     username
   }
   meVote
-  comments {
-    ...Comment
-  }
+  commentsCount
 }
