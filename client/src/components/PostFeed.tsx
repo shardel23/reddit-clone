@@ -19,8 +19,6 @@ export const PostFeed: React.FC<PostFeedProps> = ({}) => {
     return <div> No posts to show </div>;
   }
 
-  console.log(data);
-
   return (
     <>
       {!data && fetching ? (
