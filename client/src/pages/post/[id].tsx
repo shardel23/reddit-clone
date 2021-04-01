@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Center, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
 import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
@@ -24,7 +24,11 @@ const Post: NextPage = () => {
 
   let body = <></>;
   if (fetching) {
-    body = <div>Loading</div>;
+    body = (
+      <Center width="100%">
+        <Spinner />
+      </Center>
+    );
   } else if (!data?.post) {
     body = <div>Error</div>;
   } else {
@@ -58,4 +62,4 @@ const Post: NextPage = () => {
   return <Layout variant="regular">{body}</Layout>;
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: false })(Post);
+export default withUrqlClient(createUrqlClient, { ssr: true })(Post);
