@@ -1,4 +1,4 @@
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { Box, IconButton } from "@chakra-ui/react";
 import React from "react";
 import { useDeleteCommentMutation } from "../generated/graphql";
@@ -6,19 +6,23 @@ import { useDeleteCommentMutation } from "../generated/graphql";
 interface EditDeleteCommentButtonsProps {
   commentId: number;
   postId: number;
+  onEditClick: () => void;
 }
 
 export const EditDeleteCommentButtons: React.FC<EditDeleteCommentButtonsProps> = ({
   commentId,
   postId,
+  onEditClick,
 }) => {
   const [, deleteComment] = useDeleteCommentMutation();
 
   return (
     <Box>
-      {/* <NextLink href={`/update-post/${postId}`}>
-        <IconButton icon={<EditIcon />} aria-label="Edit Post" />
-      </NextLink> */}
+      <IconButton
+        icon={<EditIcon />}
+        onClick={onEditClick}
+        aria-label="Edit Post"
+      />
       <IconButton
         icon={<DeleteIcon />}
         aria-label="Delete Comment"

@@ -112,6 +112,7 @@ export type Mutation = {
   changePassword: UserResponse;
   createComment: Comment;
   deleteComment: Scalars['Boolean'];
+  updateComment?: Maybe<Comment>;
 };
 
 
@@ -166,6 +167,13 @@ export type MutationCreateCommentArgs = {
 
 
 export type MutationDeleteCommentArgs = {
+  postId: Scalars['Int'];
+  id: Scalars['Int'];
+};
+
+
+export type MutationUpdateCommentArgs = {
+  content: Scalars['String'];
   postId: Scalars['Int'];
   id: Scalars['Int'];
 };
@@ -340,6 +348,21 @@ export type RegisterMutation = (
       & Pick<FieldError, 'field' | 'message'>
     )>> }
   ) }
+);
+
+export type UpdateCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+  postId: Scalars['Int'];
+  content: Scalars['String'];
+}>;
+
+
+export type UpdateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { updateComment?: Maybe<(
+    { __typename?: 'Comment' }
+    & CommentFragment
+  )> }
 );
 
 export type UpdatePostMutationVariables = Exact<{
@@ -585,6 +608,17 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const UpdateCommentDocument = gql`
+    mutation UpdateComment($id: Int!, $postId: Int!, $content: String!) {
+  updateComment(id: $id, postId: $postId, content: $content) {
+    ...Comment
+  }
+}
+    ${CommentFragmentDoc}`;
+
+export function useUpdateCommentMutation() {
+  return Urql.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument);
 };
 export const UpdatePostDocument = gql`
     mutation UpdatePost($id: Int!, $title: String!, $text: String!) {

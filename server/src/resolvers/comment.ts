@@ -115,4 +115,27 @@ export class CommentResolver {
       hasMore: comments.length === realLimitPlusOne,
     };
   }
+
+  @Mutation(() => Comment, { nullable: true })
+  @UseMiddleware(isAuth)
+  async updateComment(
+    @Arg("id", () => Int) id: number,
+    @Arg("postId", () => Int) postId: number,
+    @Arg("content", () => String) content: string,
+    @Ctx() { req }: MyContext
+  ): Promise<Post | null> {
+    const result = await getConnection()
+      .createQueryBuilder()
+      .update(Comment)
+      .set({ content })
+      .where("id = :id and postId = :postId and ownerId = :ownerId", {
+        id,
+        postId,
+        ownerId: parseInt(req.session.userId),
+      })
+      .returning("*")
+      .execute();
+
+    return result.raw[0];
+  }
 }
