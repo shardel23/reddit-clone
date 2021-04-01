@@ -22,6 +22,7 @@ export type Query = {
   allUsers: Array<User>;
   me?: Maybe<User>;
   getComment?: Maybe<Comment>;
+  getComments: PaginatedComments;
 };
 
 
@@ -40,6 +41,13 @@ export type QueryGetCommentArgs = {
   userId: Scalars['Int'];
   postId: Scalars['Int'];
   id: Scalars['Int'];
+};
+
+
+export type QueryGetCommentsArgs = {
+  cursor?: Maybe<Scalars['String']>;
+  limit: Scalars['Int'];
+  postId: Scalars['Int'];
 };
 
 export type PaginatedPosts = {
@@ -83,6 +91,12 @@ export type Comment = {
   content: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+};
+
+export type PaginatedComments = {
+  __typename?: 'PaginatedComments';
+  comments: Array<Comment>;
+  hasMore: Scalars['Boolean'];
 };
 
 export type Mutation = {
@@ -354,6 +368,25 @@ export type VoteMutation = (
   & Pick<Mutation, 'vote'>
 );
 
+export type CommentsQueryVariables = Exact<{
+  postId: Scalars['Int'];
+  limit: Scalars['Int'];
+  cursor?: Maybe<Scalars['String']>;
+}>;
+
+
+export type CommentsQuery = (
+  { __typename?: 'Query' }
+  & { getComments: (
+    { __typename?: 'PaginatedComments' }
+    & Pick<PaginatedComments, 'hasMore'>
+    & { comments: Array<(
+      { __typename?: 'Comment' }
+      & CommentFragment
+    )> }
+  ) }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -575,6 +608,20 @@ export const VoteDocument = gql`
 
 export function useVoteMutation() {
   return Urql.useMutation<VoteMutation, VoteMutationVariables>(VoteDocument);
+};
+export const CommentsDocument = gql`
+    query Comments($postId: Int!, $limit: Int!, $cursor: String) {
+  getComments(postId: $postId, limit: $limit, cursor: $cursor) {
+    hasMore
+    comments {
+      ...Comment
+    }
+  }
+}
+    ${CommentFragmentDoc}`;
+
+export function useCommentsQuery(options: Omit<Urql.UseQueryArgs<CommentsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<CommentsQuery>({ query: CommentsDocument, ...options });
 };
 export const MeDocument = gql`
     query Me {

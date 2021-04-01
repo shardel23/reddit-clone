@@ -57,7 +57,10 @@ const invalidatePostsCache = (
   });
 };
 
-export const cursorPagination = (): Resolver => {
+export const cursorPagination = (
+  queryName: string,
+  resultType: string
+): Resolver => {
   return (_parent, fieldArgs, cache, info) => {
     const { parentKey: entityKey, fieldName } = info;
     const allFields = cache.inspectFields(entityKey);
@@ -69,26 +72,35 @@ export const cursorPagination = (): Resolver => {
     const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
     const isInCache = cache.resolve(
       cache.resolve(entityKey, fieldKey) as string,
-      "posts"
+      queryName
     );
     info.partial = !isInCache;
     const results: string[] = [];
     let hasMore = true;
     fieldInfos.forEach((fi) => {
       const key = cache.resolve(entityKey, fi.fieldKey) as string;
-      const data = cache.resolve(key, "posts") as string[];
+      const data = cache.resolve(key, queryName) as string[];
       const queryHasMore = cache.resolve(key, "hasMore") as boolean;
       if (!queryHasMore) {
         hasMore = queryHasMore;
       }
       results.push(...data);
     });
-    return {
-      __typename: "PaginatedPosts",
+    let res = {
+      __typename: resultType,
       hasMore,
-      posts: results,
     };
+    res[queryName] = results;
+    return res;
   };
+};
+
+export const cursorPostsPagination = (): Resolver => {
+  return cursorPagination("posts", "PaginatedPosts");
+};
+
+export const cursorCommentsPagination = (): Resolver => {
+  return cursorPagination("comments", "PaginatedComments");
 };
 
 export const createUrqlClient = (ssrExchange, ctx) => {
@@ -113,10 +125,12 @@ export const createUrqlClient = (ssrExchange, ctx) => {
           PaginatedPosts: () => null,
           User: () => null,
           PostAndVote: () => null,
+          PaginatedComments: () => null,
         },
         resolvers: {
           Query: {
-            posts: cursorPagination(),
+            posts: cursorPostsPagination(),
+            getComments: cursorCommentsPagination(),
           },
         },
         updates: {

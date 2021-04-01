@@ -28,16 +28,7 @@ const Post: NextPage = () => {
   } else if (!data?.post) {
     body = <div>Error</div>;
   } else {
-    const {
-      id,
-      title,
-      text,
-      owner,
-      points,
-      meVote,
-      createdAt,
-      comments,
-    } = data.post;
+    const { id, title, text, owner, points, meVote, createdAt } = data.post;
     body = (
       <Box>
         <Box mb={4}>
@@ -59,7 +50,7 @@ const Post: NextPage = () => {
           </Box>
         ) : null}
         <NewCommentSection postId={parseInt(postId)} />
-        {comments.length > 0 ? <CommentSection comments={comments} /> : null}
+        <CommentSection postId={id} />
       </Box>
     );
   }

@@ -5,15 +5,26 @@ import { MyContext } from "../types";
 import {
   Arg,
   Ctx,
+  Field,
   FieldResolver,
   Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   Root,
   UseMiddleware,
 } from "type-graphql";
 import { Post } from "../entities/Post";
+import { getConnection } from "typeorm";
+
+@ObjectType()
+export class PaginatedComments {
+  @Field(() => [Comment])
+  comments: Comment[];
+  @Field()
+  hasMore: boolean;
+}
 
 @Resolver(Comment)
 export class CommentResolver {
@@ -70,5 +81,38 @@ export class CommentResolver {
     } catch (e) {
       return false;
     }
+  }
+
+  @Query(() => PaginatedComments)
+  async getComments(
+    @Arg("postId", () => Int) postId: number,
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string
+  ): Promise<PaginatedComments> {
+    const realLimit = Math.min(10, limit);
+    const realLimitPlusOne = realLimit + 1;
+    const queryArgs: any[] = [realLimitPlusOne];
+    if (cursor) {
+      queryArgs.push(new Date(parseInt(cursor) + 1));
+    }
+    const comments = await getConnection().query(
+      `
+      SELECT
+        c.*
+      FROM comment c
+      WHERE c."postId" = ${postId}
+      ${cursor ? `AND c."updatedAt" > $2` : ""}
+      ORDER BY c."updatedAt" ASC
+      LIMIT $1
+      `,
+      queryArgs
+    );
+
+    const commentResults = comments.slice(0, realLimit) as Array<Comment>;
+
+    return {
+      comments: commentResults as Array<Comment>,
+      hasMore: comments.length === realLimitPlusOne,
+    };
   }
 }
