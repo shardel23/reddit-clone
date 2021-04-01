@@ -4,6 +4,7 @@ export class IntroducingComments21617175648652 implements MigrationInterface {
   name = "IntroducingComments21617175648652";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "comment"`);
     await queryRunner.query(
       `CREATE TABLE "comment" ("id" SERIAL NOT NULL, "ownerId" integer NOT NULL, "postId" integer NOT NULL, "content" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_10182c1bb8ca0a573d03a2f9c08" PRIMARY KEY ("id", "ownerId", "postId"))`
     );
