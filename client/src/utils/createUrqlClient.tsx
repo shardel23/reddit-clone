@@ -64,7 +64,11 @@ export const cursorPagination = (
   return (_parent, fieldArgs, cache, info) => {
     const { parentKey: entityKey, fieldName } = info;
     const allFields = cache.inspectFields(entityKey);
-    const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
+    const fieldInfos = allFields.filter(
+      (info) =>
+        info.fieldName === fieldName &&
+        info.arguments?.postId === fieldArgs.postId
+    );
     const size = fieldInfos.length;
     if (size === 0) {
       return undefined;
