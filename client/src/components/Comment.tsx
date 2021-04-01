@@ -27,7 +27,7 @@ export const Comment: React.FC<CommentProps> = ({ comment }) => {
           {comment.owner.username}
         </Heading>
         <Text fontSize="xs">
-          {new Date(parseInt(comment.updatedAt)).toLocaleString()}
+          {new Date(parseInt(comment.createdAt)).toLocaleString()}
         </Text>
         {meQuery.data?.me?.id === comment.owner.id ? (
           <Box ml="auto">

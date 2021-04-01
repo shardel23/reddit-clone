@@ -203,7 +203,7 @@ export type UsernamePasswordInput = {
 
 export type CommentFragment = (
   { __typename?: 'Comment' }
-  & Pick<Comment, 'id' | 'updatedAt' | 'content' | 'postId'>
+  & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'content' | 'postId'>
   & { owner: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
@@ -462,6 +462,7 @@ export type PostsQuery = (
 export const CommentFragmentDoc = gql`
     fragment Comment on Comment {
   id
+  createdAt
   updatedAt
   content
   owner {

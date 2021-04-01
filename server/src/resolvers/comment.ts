@@ -101,8 +101,8 @@ export class CommentResolver {
         c.*
       FROM comment c
       WHERE c."postId" = ${postId}
-      ${cursor ? `AND c."updatedAt" > $2` : ""}
-      ORDER BY c."updatedAt" ASC
+      ${cursor ? `AND c."createdAt" > $2` : ""}
+      ORDER BY c."createdAt" ASC
       LIMIT $1
       `,
       queryArgs
