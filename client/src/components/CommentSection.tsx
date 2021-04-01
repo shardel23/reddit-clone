@@ -32,9 +32,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         Comments:
       </Heading>
       <Stack spacing={4}>
-        {data?.getComments.comments.map((comment) => (
-          <Comment comment={comment} key={comment.id} />
-        ))}
+        {data?.getComments.comments.map((comment) =>
+          comment ? <Comment comment={comment} key={comment.id} /> : null
+        )}
       </Stack>
       {data && data.getComments.hasMore ? (
         <Flex>
