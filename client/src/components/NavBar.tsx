@@ -50,7 +50,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
           <Heading> LiReddit </Heading>
         </Link>
       </NextLink>
-      <NextLink href="create-post">
+      <NextLink href="/create-post">
         <Link ml="8"> Create a new post </Link>
       </NextLink>
       <Box ml={"auto"}>{body}</Box>
